@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:paddingBottom="32dp">
+
+        <!-- Header -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pengaturan Toko"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="@color/purple_700"
+            android:fontFamily="@font/poppins_bold"
+            android:layout_marginBottom="24dp"/>
+
+        <!-- Nama Toko -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Nama Toko"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/store_name_edit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Pajak -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Pajak (%)"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_marginTop="16dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/tax_rate_edit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Account Section Header -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Pengaturan Akun"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/purple_700"
+            android:fontFamily="@font/poppins_bold"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Akun Sekarang -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_switch_item"
+            android:padding="12dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Akun Saat Ini"
+                android:textSize="14sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/poppins_medium"/>
+
+            <TextView
+                android:id="@+id/current_account_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="admin@kantinsekre.com"
+                android:textSize="16sp"
+                android:textColor="@color/purple_700"
+                android:fontFamily="@font/poppins_medium"
+                android:layout_marginTop="4dp"/>
+        </LinearLayout>
+
+        <!-- Tambah Akun -->
+        <Button
+            android:id="@+id/add_account_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tambah Akun Baru"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:layout_marginTop="12dp"
+            android:backgroundTint="@color/purple_700"
+            android:fontFamily="@font/poppins_medium"
+            android:drawableStart="@drawable/ic_add"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"/>
+
+        <!-- Kelola Akun -->
+        <Button
+            android:id="@+id/manage_accounts_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Kelola Akun"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@color/purple_700"
+            android:fontFamily="@font/poppins_medium"
+            android:drawableStart="@drawable/ic_settings"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"/>
+
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E0E0E0"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="24dp"/>
+
+        <!-- Struk -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="8dp"
+            android:background="@drawable/bg_switch_item">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Cetak Struk Otomatis"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:fontFamily="@font/poppins_medium"/>
+
+            <Switch
+                android:id="@+id/receipt_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:minWidth="48dp"/>
+        </LinearLayout>
+
+        <!-- Tema -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="8dp"
+            android:background="@drawable/bg_switch_item">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Mode Gelap"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:fontFamily="@font/poppins_medium"/>
+
+            <Switch
+                android:id="@+id/dark_mode_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:minWidth="48dp"/>
+        </LinearLayout>
+
+        <!-- Tombol Simpan -->
+        <Button
+            android:id="@+id/save_settings_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Simpan Pengaturan"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:layout_marginTop="24dp"
+            android:backgroundTint="@color/purple_700"
+            android:fontFamily="@font/poppins_medium"
+            android:paddingVertical="12dp"/>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>
