@@ -3,9 +3,8 @@ package com.example.kantinsekre.util
 import com.example.kantinsekre.models.DetailTransaction
 import com.example.kantinsekre.models.Product
 import com.example.kantinsekre.models.Report
-import com.example.kantinsekre.models.Transaction
+import com.example.kantinsekre.models.Transaksi
 import com.example.kantinsekre.models.User
-import java.time.LocalDate
 
 object DummyDataProvider {
 
@@ -31,10 +30,10 @@ object DummyDataProvider {
     val productList: List<Product> get() = _productList
 
     private val _transactionList = mutableListOf(
-        Transaction(1, 2, "2025-05-07", 33000, 50000, 17000),
-        Transaction(2, 2, "2025-05-08", 27000, 30000, 3000)
+        Transaksi(1, 2, "2025-05-07", 33000, 50000, 17000),
+        Transaksi(2, 2, "2025-05-08", 27000, 30000, 3000)
     )
-    val transactionList: List<Transaction> get() = _transactionList
+    val transactionList: List<Transaksi> get() = _transactionList
 
     private val _detailTransactionList = mutableListOf(
         DetailTransaction(1, 1, 1, 1, 15000),
@@ -45,16 +44,13 @@ object DummyDataProvider {
     )
     val detailTransactionList: List<DetailTransaction> get() = _detailTransactionList
 
-    private val _reportList = mutableListOf(
-        Report(1, 2, 5, 2025, 60000, 3)
-    )
+    private val _reportList = mutableListOf<Report>()
     val reportList: List<Report> get() = _reportList
 
     fun getProductById(id: Int): Product? = _productList.find { it.id == id }
 
     fun getDetailByTransactionId(transactionId: Int): List<DetailTransaction> =
         _detailTransactionList.filter { it.transaksi_id == transactionId }
-
 
     fun createDetailTransaction(transactionId: Int, productId: Int, qty: Int, subtotal: Int): DetailTransaction {
         val newId = if (_detailTransactionList.isEmpty()) 1 else _detailTransactionList.maxOf { it.id } + 1

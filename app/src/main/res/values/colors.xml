@@ -1,22 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
 
     <color name="primary_container_color">#6C63FF</color>
     <color name="error_color">#FFBB86FC</color>
+    <color name="navy_primary">#1A237E</color>
+    <color name="navy_secondary">#283593</color>
+    <color name="background_primary">#F5F7FA</color>
+    <color name="success_primary">#2E7D32</color>
+    <color name="warning_primary">#F57C00</color>
+    <color name="white_70">#B3FFFFFF</color>
 
         <color name="primary_color">#6C63FF</color>
         <color name="background_color">#F5F5F5</color>
         <color name="card_color">#FFFFFF</color>
+        <color name="purple_200">#FFBB86FC</color>
+        <color name="purple_500">#FF6200EE</color>
+        <color name="purple_700">#FF3700B3</color>
 
+        <!-- Secondary Colors -->
+        <color name="teal_200">#FF03DAC5</color>
+        <color name="teal_700">#FF018786</color>
+
+        <!-- Basic Colors -->
+        <color name="black">#FF000000</color>
+        <color name="white">#FFFFFFFF</color>
+
+        <!-- Gray Scale -->
+        <color name="gray_100">#FFF5F5F5</color>
+        <color name="gray_200">#FFEEEEEE</color>
+        <color name="gray_300">#FFE0E0E0</color>
+        <color name="gray_400">#FFBDBDBD</color>
+        <color name="gray_500">#FF9E9E9E</color>
+        <color name="gray_600">#FF757575</color>
+        <color name="gray_700">#FF616161</color>
+        <color name="gray_800">#FF424242</color>
+        <color name="gray_900">#FF212121</color>
+
+        <!-- Additional Colors -->
+        <color name="orange_700">#FFF57C00</color>
+        <color name="green_500">#FF4CAF50</color>
+        <color name="red_500">#FFF44336</color>
+        <color name="blue_500">#FF2196F3</color>
+
+        <!-- Light Colors for Backgrounds -->
+        <color name="light_purple">#FFF3E5F5</color>
+        <color name="light_blue">#FFE3F2FD</color>
+        <color name="light_orange">#FFFFF3E0</color>
+        <color name="light_green">#FFE8F5E8</color>
+
+        <!-- Primary Colors -->
+        <color name="primary">#FF6B35</color>
+        <color name="primary_light">#FF8A65</color>
+        <color name="primary_dark">#E65100</color>
+        <color name="primary_variant">#FFB74D</color>
+
+        <!-- Secondary Colors -->
+        <color name="secondary">#4CAF50</color>
+        <color name="secondary_light">#81C784</color>
+        <color name="secondary_dark">#388E3C</color>
+
+        <!-- Background Colors -->
+        <color name="background_light">#FAFAFA</color>
+        <color name="background_dark">#121212</color>
+        <color name="surface">#FFFFFF</color>
+        <color name="surface_variant">#F5F5F5</color>
+
+        <!-- Text Colors -->
+        <color name="text_primary">#212121</color>
+        <color name="text_secondary">#757575</color>
+        <color name="text_tertiary">#BDBDBD</color>
+
+        <!-- Error Colors -->
+        <color name="error">#F44336</color>
+        <color name="error_light">#FFCDD2</color>
+        <color name="error_dark">#D32F2F</color>
+
+        <!-- Success Colors -->
+        <color name="success">#4CAF50</color>
+        <color name="success_light">#C8E6C9</color>
+
+        <!-- Warning Colors -->
+        <color name="warning">#FF9800</color>
+        <color name="warning_light">#FFE0B2</color>
+
+        <!-- White variants -->
+        <color name="white_80">#CCFFFFFF</color>
+        <color name="white_60">#99FFFFFF</color>
+
+        <!-- Others -->
+        <color name="divider">#E0E0E0</color>
+        <color name="card_background">#FFFFFF</color>
+        <color name="shadow">#33000000</color>
 </resources>

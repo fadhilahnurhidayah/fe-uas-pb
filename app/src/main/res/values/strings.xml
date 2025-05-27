@@ -2,7 +2,6 @@
     <string name="app_name">KantinSekre</string>
     <string name="app_logo">Application Logo</string>
 
-    <string name="title_dashboard">Dashboard</string>
     <string name="title_product">Product</string>
     <string name="title_transaction">Transaction</string>
     <string name="title_report">Report</string>

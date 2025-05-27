@@ -43,7 +43,7 @@ class ReportFragment : Fragment() {
         var totalItems = 0
 
         for (transaction in DummyDataProvider.transactionList) {
-            val trxDate = LocalDate.parse(transaction.date, formatter)
+            val trxDate = LocalDate.parse(transaction.tanggal, formatter)
 
             if (trxDate == today) {
                 todaySales += transaction.total

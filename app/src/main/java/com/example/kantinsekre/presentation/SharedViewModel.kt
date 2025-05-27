@@ -14,8 +14,15 @@ class SharedViewModel : ViewModel() {
         _currentUser.value = user
     }
 
+    fun getCurrentUser(): User? {
+        return _currentUser.value
+    }
+
     fun clearCurrentUser() {
         _currentUser.value = null
     }
 
+    fun isUserLoggedIn(): Boolean {
+        return _currentUser.value != null
+    }
 }

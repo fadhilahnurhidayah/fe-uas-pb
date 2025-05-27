@@ -1,10 +1,11 @@
 package com.example.kantinsekre.models
 
-data class Transaction(
+data class Transaksi(
     val id: Int,
-    val userId: Int,
-    val date: String,
+    val kasir_id: Int,
+    val tanggal: String,
     val total: Int,
-    val tunai: Int,
+    val bayar: Int,
     val kembalian: Int
 )
+
