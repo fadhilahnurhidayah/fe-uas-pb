@@ -17,18 +17,15 @@ class ProductAdapter(
 ) : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
 
     class ProductViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        // Using the new layout IDs from the MaterialCardView layout
         val productName: TextView = itemView.findViewById(R.id.tvProductName)
         val productPrice: TextView = itemView.findViewById(R.id.tvPrice)
         val productCategory: TextView = itemView.findViewById(R.id.tvCategory)
         val productImage: ImageView = itemView.findViewById(R.id.imageProduct)
 
-        // Additional views from the new layout
         val viewOverlay: View = itemView.findViewById(R.id.viewOverlay)
         val layoutActions: LinearLayout = itemView.findViewById(R.id.layoutActions)
         val fabEdit: FloatingActionButton = itemView.findViewById(R.id.fabEdit)
         val fabDelete: FloatingActionButton = itemView.findViewById(R.id.fabDelete)
-        val tvAvailability: TextView = itemView.findViewById(R.id.tvAvailability)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {

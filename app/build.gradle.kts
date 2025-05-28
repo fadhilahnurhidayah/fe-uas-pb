@@ -26,34 +26,50 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     kotlinOptions {
         jvmTarget = "11"
     }
+
     buildFeatures {
         viewBinding = true
     }
 }
 
 dependencies {
-
+    // AndroidX Core and AppCompat
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
+
+    // Material Design
     implementation(libs.material)
+
+    // ConstraintLayout
     implementation(libs.androidx.constraintlayout)
+
+    // Lifecycle
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
+
+    // Navigation Component
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
-    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation ("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.11")
-    implementation ("com.squareup.okhttp3:okhttp:4.11.0")
-    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
-    implementation ("com.google.android.material:material:1.9.0")
+
+    // Networking (Retrofit + OkHttp)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.gson)
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging)
+
+    // Coroutines
+    implementation(libs.kotlinx.coroutines.android)
+
+    // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -10,7 +10,7 @@ class SharedViewModel : ViewModel() {
     private val _currentUser = MutableLiveData<User?>()
     val currentUser: LiveData<User?> = _currentUser
 
-    fun setCurrentUser(user: User) {
+    fun setCurrentUser(user: User?) {
         _currentUser.value = user
     }
 

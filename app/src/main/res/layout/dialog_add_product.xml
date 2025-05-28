@@ -3,37 +3,35 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="?attr/colorSurface"
+    android:theme="@style/Theme.Material3.Light.Dialog"> <RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/colorPrimaryContainer"
+    android:padding="16dp">
 
-    <!-- Dialog Header -->
-    <RelativeLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
-        android:padding="16dp">
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:text="Add new product"
+        android:textAppearance="?attr/textAppearanceTitleLarge"
+        android:textColor="?attr/colorOnPrimaryContainer" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:text="Add New Product Item"
-            android:textAppearance="?attr/textAppearanceTitleLarge"
-            android:textColor="?attr/colorOnPrimary" />
+    <ImageButton
+        android:id="@+id/btnClose"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Close dialog"
+        android:src="@drawable/ic_close"
+        app:tint="?attr/colorOnPrimaryContainer" />
+</RelativeLayout>
 
-        <ImageButton
-            android:id="@+id/btnClose"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Close dialog"
-            android:src="@drawable/ic_close"
-            app:tint="?attr/colorOnPrimary" />
-    </RelativeLayout>
-
-    <!-- Form Content -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -44,142 +42,135 @@
             android:orientation="vertical"
             android:padding="24dp">
 
-            <!-- Name Field -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Name"
-                android:textAppearance="?attr/textAppearanceLabelMedium"
+                android:text="Nama Produk" android:textAppearance="?attr/textAppearanceLabelLarge"
                 android:textStyle="bold"
+                android:layout_marginBottom="4dp"
                 android:labelFor="@id/editTextName" />
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayoutName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editTextName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Enter product name" />
+                android:layout_marginBottom="16dp" style="@style/Widget.Material3.TextInputLayout.OutlinedBox"> <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionNext"
+                android:singleLine="true" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Price Field -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Price"
-                android:textAppearance="?attr/textAppearanceLabelMedium"
+                android:text="Harga Jual (Rp)" android:textAppearance="?attr/textAppearanceLabelLarge"
                 android:textStyle="bold"
+                android:layout_marginBottom="4dp"
                 android:labelFor="@id/editTextPrice" />
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayoutPrice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editTextPrice"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
-                    android:hint="Enter selling price" />
+                android:layout_marginBottom="16dp"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                app:prefixText="Rp"> <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextPrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:imeOptions="actionNext"
+                android:singleLine="true" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Cost Price Field -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Cost Price"
-                android:textAppearance="?attr/textAppearanceLabelMedium"
+                android:text="Harga Pokok (Rp)"
+                android:textAppearance="?attr/textAppearanceLabelLarge"
                 android:textStyle="bold"
+                android:layout_marginBottom="4dp"
                 android:labelFor="@id/editTextCostPrice" />
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayoutCostPrice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                android:layout_marginBottom="16dp"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                app:prefixText="Rp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editTextCostPrice"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
-                    android:hint="Enter cost price" />
+                    android:inputType="number"
+                    android:imeOptions="actionDone"
+                    android:singleLine="true" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Category Field -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Category"
-                android:textAppearance="?attr/textAppearanceLabelMedium"
+                android:text="Kategori"
+                android:textAppearance="?attr/textAppearanceLabelLarge"
                 android:textStyle="bold"
+                android:layout_marginBottom="4dp"
                 android:labelFor="@id/autoCompleteCategory" />
 
-            <!-- Dropdown or New Category Input -->
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp">
+                android:layout_marginBottom="24dp"> <LinearLayout
+                android:id="@+id/layoutCategoryDropdown"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"> <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/dropdownCategory"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
 
-                <!-- Category Dropdown -->
-                <LinearLayout
-                    android:id="@+id/layoutCategoryDropdown"
+                <AutoCompleteTextView
+                    android:id="@+id/autoCompleteCategory"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:inputType="none"
+                    android:hint="Pilih atau masukkan kategori" /> </com.google.android.material.textfield.TextInputLayout>
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/dropdownCategory"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnNewCategory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Baru" app:icon="@drawable/ic_add"
+                    style="@style/Widget.Material3.Button.TextButton" />
+            </LinearLayout>
 
-                        <AutoCompleteTextView
-                            android:id="@+id/autoCompleteCategory"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="none"
-                            android:hint="Select a category" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnNewCategory"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="Add New"
-                        style="@style/Widget.MaterialComponents.Button.TextButton" />
-                </LinearLayout>
-
-                <!-- New Category Input -->
                 <LinearLayout
                     android:id="@+id/layoutNewCategory"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:visibility="gone">
+                    android:visibility="gone"
+                    android:gravity="center_vertical">
 
                     <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutNewCategory"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/editTextNewCategory"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="Enter new category" />
+                            android:hint="Masukkan kategori baru" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.button.MaterialButton
@@ -187,43 +178,16 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:text="Cancel"
-                        android:textColor="?attr/colorError"
-                        style="@style/Widget.MaterialComponents.Button.TextButton" />
+                        android:text="Batal"
+                        app:icon="@drawable/ic_close" android:textColor="?attr/colorError"
+                        style="@style/Widget.Material3.Button.TextButton" />
                 </LinearLayout>
             </FrameLayout>
 
-            <!-- Description Field -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Description"
-                android:textAppearance="?attr/textAppearanceLabelMedium"
-                android:textStyle="bold"
-                android:labelFor="@id/editTextDescription" />
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editTextDescription"
-                    android:layout_width="match_parent"
-                    android:layout_height="100dp"
-                    android:gravity="top"
-                    android:inputType="textMultiLine"
-                    android:hint="Enter product description" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- Action Buttons -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:gravity="end"
+                android:layout_marginTop="16dp" android:gravity="end"
                 android:orientation="horizontal">
 
                 <com.google.android.material.button.MaterialButton
@@ -231,15 +195,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
-                    android:text="Cancel"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                    android:text="Batal"
+                    style="@style/Widget.Material3.Button.OutlinedButton" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnAddProduct"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Add Item" />
-            </LinearLayout>
+                    android:text="Tambah Produk" /> </LinearLayout>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

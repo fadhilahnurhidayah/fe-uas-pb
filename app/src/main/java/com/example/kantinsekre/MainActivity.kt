@@ -18,7 +18,6 @@ class MainActivity : AppCompatActivity() {
     private val sharedViewModel: SharedViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // FORCE LIGHT MODE - INI YANG PENTING!
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
         super.onCreate(savedInstanceState)

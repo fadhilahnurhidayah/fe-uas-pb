@@ -1,176 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    android:padding="20dp">
+    android:background="#F5F7FA">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingBottom="32dp">
+        android:orientation="vertical">
 
         <!-- Header Section -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:padding="16dp"
-            android:background="@color/navy_primary"
-            android:layout_marginBottom="24dp">
-
-            <ImageView
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@drawable/ic_settings"
-                app:tint="@android:color/white"
-                android:layout_marginEnd="12dp"/>
+            android:background="@drawable/rounded_header_background"
+            android:orientation="vertical"
+            android:padding="24dp">
 
             <TextView
-                android:layout_width="0dp"
-                android:layout_weight="1"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Settings"
-                android:textSize="22sp"
-                android:textStyle="bold"
                 android:textColor="@android:color/white"
-                android:fontFamily="@font/poppins_bold"/>
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium" />
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_store"
-                app:tint="@android:color/white"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Manage your account and preferences"
+                android:textColor="#E8EAED"
+                android:textSize="14sp" />
+
         </LinearLayout>
 
-        <!-- Store Settings Card -->
-        <androidx.cardview.widget.CardView
+        <!-- Content Section -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp"
-            app:cardUseCompatPadding="true">
+            android:layout_marginTop="-16dp"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingBottom="24dp">
 
-            <LinearLayout
+            <!-- Current Account Card -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="20dp">
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Pengaturan Toko"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/purple_700"
-                    android:fontFamily="@font/poppins_bold"
-                    android:layout_marginBottom="16dp"/>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Nama Kantin"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    app:startIconDrawable="@drawable/ic_store"
-                    app:boxStrokeColor="@color/purple_700"
-                    app:hintTextColor="@color/purple_700">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/store_name_edit"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppins_medium"/>
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <!-- Dark Mode Switch -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:padding="12dp"
-                    android:layout_marginTop="16dp"
-                    android:background="@drawable/bg_switch_item">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_dark_mode"
-                        app:tint="@color/purple_700"
-                        android:layout_marginEnd="12dp"/>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Mode Gelap"
-                            android:textColor="@color/black"
-                            android:textSize="16sp"
-                            android:fontFamily="@font/poppins_medium"/>
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Ubah tampilan menjadi tema gelap"
-                            android:textColor="@color/gray_600"
-                            android:textSize="12sp"
-                            android:fontFamily="@font/poppins_regular"/>
-                    </LinearLayout>
-
-                    <Switch
-                        android:id="@+id/dark_mode_switch"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:minHeight="48dp"
-                        android:minWidth="48dp"/>
-                </LinearLayout>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- Account Management Card -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp"
-            app:cardUseCompatPadding="true">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="20dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="👥 Manajemen Akun"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/purple_700"
-                    android:fontFamily="@font/poppins_bold"
-                    android:layout_marginBottom="16dp"/>
-
-                <!-- Current Account Info -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:background="@drawable/bg_current_account"
-                    android:padding="16dp"
-                    android:layout_marginBottom="16dp">
+                    android:padding="20dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -179,108 +68,252 @@
                         android:gravity="center_vertical">
 
                         <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:background="@drawable/circle_bg"
                             android:src="@drawable/ic_account_circle"
-                            app:tint="@color/purple_700"
-                            android:layout_marginEnd="8dp"/>
+                            android:scaleType="centerInside"
+                            android:padding="8dp" />
 
-                        <TextView
+                        <LinearLayout
                             android:layout_width="0dp"
-                            android:layout_weight="1"
                             android:layout_height="wrap_content"
-                            android:text="Akun Aktif"
-                            android:textSize="14sp"
-                            android:textColor="@color/gray_600"
-                            android:fontFamily="@font/poppins_medium"/>
+                            android:layout_weight="1"
+                            android:layout_marginStart="16dp"
+                            android:orientation="vertical">
 
-                        <View
-                            android:layout_width="8dp"
-                            android:layout_height="8dp"
-                            android:background="@drawable/bg_active_indicator"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Current Account"
+                                android:textColor="#666666"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/current_account_name"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="admin@kantinsekre.com"
+                                android:textColor="#1A1A1A"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:layout_marginTop="2dp" />
+
+                            <TextView
+                                android:id="@+id/current_account_role"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Owner"
+                                android:textColor="#4CAF50"
+                                android:textSize="14sp"
+                                android:layout_marginTop="2dp" />
+
+                        </LinearLayout>
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_check_circle"/>
+
                     </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/current_account_name"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="admin@kantinsekre.com"
-                        android:textSize="16sp"
-                        android:textColor="@color/purple_700"
-                        android:fontFamily="@font/poppins_semi_bold"
-                        android:layout_marginStart="28dp"
-                        android:layout_marginTop="4dp"/>
-
-                    <TextView
-                        android:id="@+id/current_account_role"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Admin"
-                        android:textSize="14sp"
-                        android:textColor="@color/gray_600"
-                        android:fontFamily="@font/poppins_medium"
-                        android:layout_marginStart="28dp"
-                        android:layout_marginTop="2dp"/>
                 </LinearLayout>
 
-                <!-- Account Action Buttons -->
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Account Management Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center"
-                    android:layout_marginBottom="8dp">
+                    android:orientation="vertical"
+                    android:padding="20dp">
 
-                    <Button
-                        android:id="@+id/add_account_button"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="48dp"
-                        android:text="Add"
-                        android:textAllCaps="false"
-                        android:textColor="@android:color/white"
-                        android:textSize="14sp"
-                        android:backgroundTint="@color/purple_700"
-                        android:fontFamily="@font/poppins_medium"
-                        android:drawableStart="@drawable/ic_add"
-                        android:drawablePadding="8dp"
-                        android:layout_marginEnd="8dp"
-                        app:cornerRadius="8dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Account Management"
+                        android:textColor="#1A1A1A"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="16dp" />
 
-                    <Button
-                        android:id="@+id/manage_accounts_button"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="48dp"
-                        android:text="Kelola Akun"
-                        android:textAllCaps="false"
-                        android:textColor="@color/purple_700"
-                        android:textSize="14sp"
-                        android:backgroundTint="@android:color/transparent"
-                        android:fontFamily="@font/poppins_medium"
-                        android:drawableStart="@drawable/ic_manage_accounts"
-                        android:drawablePadding="8dp"
-                        android:layout_marginStart="8dp"
-                        app:strokeColor="@color/purple_700"
-                        app:strokeWidth="1dp"
-                        app:cornerRadius="8dp"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center"
+                        android:layout_marginBottom="12dp">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/add_account_button"
+                            android:layout_width="0dp"
+                            android:layout_height="52dp"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="8dp"
+                            android:text="Add Account"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            app:icon="@drawable/ic_add"
+                            app:iconGravity="textStart"
+                            app:iconPadding="8dp"
+                            app:cornerRadius="12dp"
+                            style="@style/Widget.MaterialComponents.Button.Icon" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/manage_accounts_button"
+                            android:layout_width="0dp"
+                            android:layout_height="52dp"
+                            android:layout_weight="1"
+                            android:layout_marginStart="8dp"
+                            android:text="Manage"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            app:icon="@drawable/ic_manage_accounts"
+                            app:iconGravity="textStart"
+                            app:iconPadding="8dp"
+                            app:cornerRadius="12dp"
+                            style="@style/Widget.MaterialComponents.Button.Icon" />
+
+                    </LinearLayout>
+
                 </LinearLayout>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
 
-        <!-- Save Button -->
-        <Button
-            android:id="@+id/save_settings_button"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:text="Save Settings"
-            android:textAllCaps="false"
-            android:textColor="@android:color/white"
-            android:textSize="16sp"
-            android:backgroundTint="@color/purple_700"
-            android:fontFamily="@font/poppins_semi_bold"
-            app:cornerRadius="12dp"
-            android:elevation="4dp"/>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Store Settings Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Store Settings"
+                        android:textColor="#1A1A1A"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="16dp" />
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingVertical="8dp">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_dark_mode" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="16dp"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Dark Mode"
+                                android:textColor="#1A1A1A"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Switch to dark theme"
+                                android:textColor="#666666"
+                                android:textSize="14sp"
+                                android:layout_marginTop="2dp" />
+
+                        </LinearLayout>
+
+                        <com.google.android.material.switchmaterial.SwitchMaterial
+                            android:id="@+id/dark_mode_switch"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp" />
+
+                    </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/save_settings_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_marginTop="16dp"
+                        android:text="Save Settings"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:icon="@drawable/ic_save"
+                        app:iconGravity="textStart"
+                        app:iconPadding="8dp"
+                        app:cornerRadius="12dp"
+                        style="@style/Widget.MaterialComponents.Button" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Logout Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/logout_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:text="Logout"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#F44336"
+                        app:icon="@drawable/ic_logout"
+                        app:iconGravity="textStart"
+                        app:iconPadding="8dp"
+                        app:iconTint="#F44336"
+                        app:cornerRadius="12dp"
+                        app:strokeColor="#F44336"
+                        app:strokeWidth="2dp"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+
     </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+
+</ScrollView>

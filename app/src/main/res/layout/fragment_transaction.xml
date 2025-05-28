@@ -1,252 +1,370 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F7FA">
+    android:background="#F5F7FA"
+    tools:context=".presentation.transaction.TransactionFragment">
 
-    <!-- App Bar with Clean Background -->
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/app_bar_layout"
-        android:layout_width="match_parent"
+    <!-- Header Container -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/transaction_header_container"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/navy_primary"
-        android:elevation="2dp"
-        app:elevation="2dp">
+        android:layout_margin="16dp"
+        android:background="@drawable/rounded_header_background"
+        android:padding="16dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <TextView
+            android:id="@+id/transaction_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins_semi_bold"
+            android:text="Transaction"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/transaction_subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/poppins_medium"
+            android:text="Order Details"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:layout_constraintTop_toBottomOf="@id/transaction_title"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/add_item_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="#1A56DB"
+            android:fontFamily="@font/poppins_medium"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:text="Add Item"
+            android:textAllCaps="false"
+            app:cornerRadius="20dp"
+            app:icon="@drawable/ic_add"
+            app:iconGravity="textStart"
+            app:iconTint="#FFFFFF"
+            app:layout_constraintTop_toBottomOf="@id/transaction_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/transaction_subtitle" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Bill Header Card -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/bill_header_card"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp"
+        app:layout_constraintTop_toBottomOf="@id/transaction_header_container"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:padding="16dp">
 
-            <TextView
-                android:id="@+id/transaction_title"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="Current Transaction"
-                android:textColor="@color/white"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:fontFamily="@font/poppins_medium"
-                app:layout_constraintEnd_toStartOf="@+id/add_item_button"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/item_count_text_view"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="0 items"
-                android:textColor="#6B7280"
-                android:textSize="14sp"
-                android:fontFamily="@font/poppins"
-                app:layout_constraintEnd_toStartOf="@+id/add_item_button"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/transaction_title" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/add_item_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:backgroundTint="#1A56DB"
-                android:fontFamily="@font/poppins_medium"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:text="Add Item"
-                android:textAllCaps="false"
-                app:cornerRadius="20dp"
-                app:icon="@drawable/ic_add"
-                app:iconGravity="textStart"
-                app:iconTint="#FFFFFF"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <!-- Main Content -->
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp">
-
-            <!-- Empty State View -->
             <LinearLayout
-                android:id="@+id/empty_state_view"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="144dp"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:visibility="visible"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <ImageView
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
-                    android:alpha="0.5"
-                    android:src="@drawable/ic_shopping_cart_empty" />
+                android:orientation="horizontal"
+                android:layout_marginBottom="8dp">
 
                 <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/poppins_medium"
+                    android:text="Transaction ID:"
+                    android:textColor="#374151"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/transaction_id_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/poppins_semi_bold"
+                    android:text="TXN12345678"
+                    android:textColor="#1F2937"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:fontFamily="@font/poppins_medium"
-                    android:text="No items in transaction"
+                    android:text="Date, Time:"
                     android:textColor="#374151"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/datetime_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_medium"
+                    android:text="25 Des 2024, 14:30"
+                    android:textColor="#1F2937"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Item Count -->
+    <TextView
+        android:id="@+id/item_count_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/poppins_medium"
+        android:text="0 items"
+        android:textColor="#6B7280"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bill_header_card" />
+
+    <!-- Bill Container -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/bill_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp"
+        app:layout_constraintTop_toBottomOf="@id/item_count_text_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/summary_container">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <!-- Items Header -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#F9FAFB"
+                android:padding="16dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:fontFamily="@font/poppins_semi_bold"
+                    android:text="Item"
+                    android:textColor="#374151"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/poppins_semi_bold"
+                    android:text="Qty"
+                    android:textAlignment="center"
+                    android:textColor="#374151"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.5"
+                    android:fontFamily="@font/poppins_semi_bold"
+                    android:text="Price"
+                    android:textAlignment="textEnd"
+                    android:textColor="#374151"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <!-- Items List -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/transaction_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:clipToPadding="false"
+                android:paddingBottom="8dp"
+                tools:listitem="@layout/item_transaction" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Summary Container -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/summary_container"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp"
+        app:layout_constraintBottom_toTopOf="@id/action_buttons_container"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Total -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/poppins_semi_bold"
+                    android:text="Total:"
+                    android:textColor="#1F2937"
                     android:textSize="18sp" />
 
                 <TextView
+                    android:id="@+id/total_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:fontFamily="@font/poppins"
-                    android:text="Tap 'Add Item' to start building your order"
-                    android:textAlignment="center"
-                    android:textColor="#6B7280"
-                    android:textSize="14sp" />
-
+                    android:fontFamily="@font/poppins_bold"
+                    android:text="Rp 0"
+                    android:textColor="#059669"
+                    android:textSize="20sp" />
             </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
-            <!-- Transaction Container -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/transaction_container"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:visibility="gone"
-                app:cardBackgroundColor="#FFFFFF"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp"
-                app:strokeColor="#E5E7EB"
-                app:strokeWidth="1dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <!-- Items List -->
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/transaction_recycler_view"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:nestedScrollingEnabled="false"
-                        android:padding="8dp"
-                        tools:itemCount="3"
-                        tools:listitem="@layout/item_transaction" />
-
-                    <!-- Total Section -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="#F9FAFB"
-                        android:orientation="vertical"
-                        android:padding="16dp">
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_marginBottom="16dp"
-                            android:background="#E5E7EB" />
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Total Amount"
-                                android:textColor="#374151"
-                                android:textSize="18sp"
-                                android:fontFamily="@font/poppins_medium" />
-
-                            <TextView
-                                android:id="@+id/total_text_view"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Rp 0"
-                                android:textColor="#1A56DB"
-                                android:textSize="24sp"
-                                android:textStyle="bold"
-                                android:fontFamily="@font/poppins_semi_bold" />
-
-                        </LinearLayout>
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </androidx.core.widget.NestedScrollView>
-
-    <!-- Bottom Action Buttons -->
+    <!-- Action Buttons -->
     <LinearLayout
-        android:layout_width="match_parent"
+        android:id="@+id/action_buttons_container"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:background="#FFFFFF"
-        android:elevation="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         android:orientation="horizontal"
-        android:padding="16dp">
+        app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/clear_button"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="0dp"
-            android:layout_height="56dp"
-            android:layout_marginEnd="8dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Clear All"
-            android:textSize="16sp"
-            android:textAllCaps="false"
+            android:layout_marginEnd="8dp"
+            android:enabled="false"
             android:fontFamily="@font/poppins_medium"
+            android:padding="16dp"
+            android:text="Clear"
+            android:textAllCaps="false"
+            android:textColor="#DC2626"
             app:cornerRadius="8dp"
             app:icon="@drawable/ic_clear"
-            app:strokeColor="#DC2626"
+            app:iconGravity="textStart"
             app:iconTint="#DC2626"
-            android:textColor="#DC2626" />
+            app:strokeColor="#DC2626" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/pay_button"
-            style="@style/Widget.Material3.Button"
             android:layout_width="0dp"
-            android:layout_height="56dp"
-            android:layout_marginStart="8dp"
+            android:layout_height="wrap_content"
             android:layout_weight="2"
-            android:text="Pay Now"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textAllCaps="false"
+            android:layout_marginStart="8dp"
+            android:backgroundTint="#059669"
+            android:enabled="false"
             android:fontFamily="@font/poppins_semi_bold"
-            app:backgroundTint="#1A56DB"
+            android:padding="16dp"
+            android:text="Pay Now"
+            android:textAllCaps="false"
             app:cornerRadius="8dp"
-            app:icon="@drawable/ic_payment" />
-
+            app:icon="@drawable/ic_payment"
+            app:iconGravity="textStart"
+            app:iconTint="#FFFFFF" />
     </LinearLayout>
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+    <!-- Empty State -->
+    <LinearLayout
+        android:id="@+id/empty_state_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_marginBottom="16dp"
+            android:alpha="0.5"
+            android:src="@drawable/ic_shopping_cart_empty" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:fontFamily="@font/poppins_semi_bold"
+            android:text="No Items Added"
+            android:textColor="#374151"
+            android:textSize="18sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins"
+            android:text="Start adding items to create transaction"
+            android:textColor="#6B7280"
+            android:textSize="14sp"
+            android:textAlignment="center" />
+    </LinearLayout>
+
+    <!-- Bottom Navigation -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_nav_menu" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

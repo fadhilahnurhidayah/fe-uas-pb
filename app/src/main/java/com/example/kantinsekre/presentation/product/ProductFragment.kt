@@ -8,7 +8,6 @@ import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
-import com.example.kantinsekre.R
 import com.example.kantinsekre.adapters.ProductAdapter
 import com.example.kantinsekre.databinding.FragmentProductBinding
 import com.example.kantinsekre.models.Product
@@ -22,13 +21,7 @@ class ProductFragment : Fragment() {
     private val allProducts = mutableListOf(
         Product(1, "Nasi Goreng", 15000, "Makanan", 10000),
         Product(2, "Mie Goreng", 12000, "Makanan", 8000),
-        Product(3, "Es Teh", 5000, "Minuman", 2000),
-        Product(4, "Es Jeruk", 6000, "Minuman", 3000),
-        Product(5, "Ayam Goreng", 18000, "Makanan", 12000),
-        Product(6, "Soto Ayam", 16000, "Makanan", 11000),
-        Product(7, "Kopi Hitam", 7000, "Minuman", 3500),
-        Product(8, "Kopi Susu", 9000, "Minuman", 5000)
-    )
+        Product(3, "Es Teh", 5000, "Minuman", 2000))
 
     private val filteredProducts = mutableListOf<Product>()
     private lateinit var productAdapter: ProductAdapter
@@ -50,7 +43,7 @@ class ProductFragment : Fragment() {
         setupFilterButton()
         setupAddProductButton()
 
-        // Initialize with all products
+        // Initialize filteredProducts after allProducts are set
         filteredProducts.clear()
         filteredProducts.addAll(allProducts)
         updateProductCount()
@@ -59,7 +52,6 @@ class ProductFragment : Fragment() {
 
     private fun setupRecyclerView() {
         productAdapter = ProductAdapter(filteredProducts) { product ->
-            showProductDetails(product)
         }
 
         binding.productRecyclerView.apply {
@@ -147,21 +139,15 @@ class ProductFragment : Fragment() {
     }
 
     private fun showAddProductDialog() {
-        // Here you would implement showing the dialog for adding a new product
-        // This would typically involve inflating the dialog layout from paste-2.txt
-        // and handling the input fields and button clicks
-        Toast.makeText(requireContext(), "Add Product Feature Coming Soon", Toast.LENGTH_SHORT).show()
+        val dialog = AddProductDialogFragment()
+        dialog.onProductAdded = { newProduct ->
+            allProducts.add(newProduct)
+            filterProducts(binding.searchProducts.query?.toString())
+        }
+        dialog.show(childFragmentManager, "AddProductDialog")
     }
 
-    private fun showProductDetails(product: Product) {
-        // This would show details of the selected product
-        // You could implement a detail view or dialog here
-        Toast.makeText(
-            requireContext(),
-            "Selected: ${product.name} - Rp${product.price}",
-            Toast.LENGTH_SHORT
-        ).show()
-    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
