@@ -1,11 +1,36 @@
 package com.example.kantinsekre.models
 
+import com.google.gson.annotations.SerializedName
+
 data class Transaksi(
-    val id: Int,
-    val kasir_id: Int,
-    val tanggal: String,
-    val total: Int,
-    val bayar: Int,
-    val kembalian: Int
+
+	@field:SerializedName("data")
+	val data: List<DataItemTransaksi?>? = null,
+
+	@field:SerializedName("success")
+	val success: Boolean? = null,
+
+	@field:SerializedName("message")
+	val message: String? = null
 )
 
+data class DataItemTransaksi(
+
+	@field:SerializedName("nama_pembeli")
+	val namaPembeli: String? = null,
+
+	@field:SerializedName("total_harga")
+	val totalHarga: String? = null,
+
+	@field:SerializedName("id")
+	val id: Int? = null,
+
+	@field:SerializedName("id_user")
+	val idUser: Int? = null,
+
+	@field:SerializedName("tanggal")
+	val tanggal: String? = null,
+
+	@field:SerializedName("status")
+	val status: String? = null
+)

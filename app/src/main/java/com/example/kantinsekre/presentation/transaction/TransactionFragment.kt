@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.kantinsekre.R
 import com.example.kantinsekre.adapters.TransactionAdapter
 import com.example.kantinsekre.models.Product
-import com.example.kantinsekre.util.DummyDataProvider
+//import com.example.kantinsekre.util.DummyDataProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.button.MaterialButton
@@ -50,7 +50,7 @@ class TransactionFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initializeViews(view)
         setupRecyclerView(view)
-        setupButtons()
+//        setupButtons()
         initializeTransaction()
         updateUI()
     }
@@ -81,25 +81,25 @@ class TransactionFragment : Fragment() {
         }
     }
 
-    private fun setupButtons() {
-        addItemButton.setOnClickListener {
-            showAddItemDialog()
-        }
-
-        payButton.setOnClickListener {
-            if (currentItems.isNotEmpty()) {
-                showPaymentConfirmationDialog()
-            } else {
-                Snackbar.make(requireView(), "Tidak ada item untuk dibayar", Snackbar.LENGTH_SHORT).show()
-            }
-        }
-
-        clearButton.setOnClickListener {
-            if (currentItems.isNotEmpty()) {
-                showClearConfirmationDialog()
-            }
-        }
-    }
+//    private fun setupButtons() {
+//        addItemButton.setOnClickListener {
+//            showAddItemDialog()
+//        }
+//
+//        payButton.setOnClickListener {
+//            if (currentItems.isNotEmpty()) {
+//                showPaymentConfirmationDialog()
+//            } else {
+//                Snackbar.make(requireView(), "Tidak ada item untuk dibayar", Snackbar.LENGTH_SHORT).show()
+//            }
+//        }
+//
+//        clearButton.setOnClickListener {
+//            if (currentItems.isNotEmpty()) {
+//                showClearConfirmationDialog()
+//            }
+//        }
+//    }
 
     private fun initializeTransaction() {
         // Set transaction ID and datetime
@@ -110,26 +110,26 @@ class TransactionFragment : Fragment() {
         dateTimeTextView.text = currentDateTime
     }
 
-    private fun showAddItemDialog() {
-        val availableProducts = DummyDataProvider.productList
-        if (availableProducts.isEmpty()) {
-            Snackbar.make(requireView(), "Tidak ada produk tersedia", Snackbar.LENGTH_SHORT).show()
-            return
-        }
-
-        val productNames = availableProducts.map {
-            "${it.name}\n${formatCurrency(it.price.toDouble())}"
-        }.toTypedArray()
-
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Pilih Item")
-            .setItems(productNames) { _, which ->
-                val selectedProduct = availableProducts[which]
-                showQuantityDialog(selectedProduct)
-            }
-            .setNegativeButton("Batal", null)
-            .show()
-    }
+//    private fun showAddItemDialog() {
+//        val availableProducts = DummyDataProvider.productList
+//        if (availableProducts.isEmpty()) {
+//            Snackbar.make(requireView(), "Tidak ada produk tersedia", Snackbar.LENGTH_SHORT).show()
+//            return
+//        }
+//
+//        val productNames = availableProducts.map {
+//            "${it.name}\n${formatCurrency(it.price.toDouble())}"
+//        }.toTypedArray()
+//
+//        MaterialAlertDialogBuilder(requireContext())
+//            .setTitle("Pilih Item")
+//            .setItems(productNames) { _, which ->
+//                val selectedProduct = availableProducts[which]
+//                showQuantityDialog(selectedProduct)
+//            }
+//            .setNegativeButton("Batal", null)
+//            .show()
+//    }
 
     private fun showQuantityDialog(product: Product) {
         val quantities = arrayOf("1", "2", "3", "4", "5", "10")

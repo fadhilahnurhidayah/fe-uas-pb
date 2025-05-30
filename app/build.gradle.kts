@@ -65,7 +65,8 @@ dependencies {
     implementation(libs.retrofit.gson)
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging)
-
+// OkHttp3 Logging Interceptor
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.12.0")
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
 

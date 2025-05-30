@@ -1,7 +1,10 @@
 import android.view.Menu
 import com.example.kantinsekre.models.DetailTransaction
+import com.example.kantinsekre.models.MenuResponse
 import com.example.kantinsekre.models.User
 import com.example.kantinsekre.models.Transaksi
+import com.example.kantinsekre.models.UserResponse
+import com.example.kantinsekre.models.createmenu
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -11,6 +14,9 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface ApiService {
+
+    @POST("/user/login")
+    suspend fun login(@Body request: User) : UserResponse
 
     @GET("/user/")
     suspend fun getAllUsers(): List<User>
@@ -57,8 +63,12 @@ interface ApiService {
     @DELETE("/delete-transaksi-detail/{id}")
     suspend fun deletetransaksiDetail(@Path("id") id: String): Response<Unit>
 
-    @GET("/menu/")
-    suspend fun getAllMenu(): List<Menu>
+    @POST("/menu")
+    suspend fun createMenu(@Body product: createmenu): Menu
+
+
+    @GET("/menu")
+    suspend fun getAllMenu(): MenuResponse
 
     @GET ("/menu/{id}")
     suspend fun  getMenuById(@Path("id") id: String): Menu

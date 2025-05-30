@@ -4,16 +4,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kantinsekre.R
-import com.example.kantinsekre.models.Product
+import com.example.kantinsekre.models.Menu
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import android.widget.LinearLayout
 
 class ProductAdapter(
-    private val products: List<Product>,
-    private val onProductClick: (Product) -> Unit
+    private val products: MutableList<Menu>,
+    private val onProductClick: (Menu) -> Unit
 ) : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
 
     class ProductViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -38,11 +38,11 @@ class ProductAdapter(
         val product = products[position]
 
         // Set product information
-        holder.productName.text = product.name
-        holder.productCategory.text = product.category
+        holder.productName.text = product.nama
+        holder.productCategory.text = product.jenis
 
         // Format price with proper currency symbol and formatting
-        holder.productPrice.text = String.format("Rp %,d", product.price)
+        holder.productPrice.text = "Rp ${product.harga}"
 
         // Set default image resource
         holder.productImage.setImageResource(R.drawable.placeholder_food)
@@ -62,7 +62,7 @@ class ProductAdapter(
         }
     }
 
-    private fun setupActionButtons(holder: ProductViewHolder, product: Product) {
+    private fun setupActionButtons(holder: ProductViewHolder, product: Menu) {
         // Edit button click listener
         holder.fabEdit.setOnClickListener {
             // Handle edit action

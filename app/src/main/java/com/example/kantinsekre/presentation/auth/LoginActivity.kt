@@ -3,17 +3,22 @@ package com.example.kantinsekre.presentation.auth
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.example.kantinsekre.MainActivity
 import com.example.kantinsekre.databinding.ActivityLoginBinding
+import com.example.kantinsekre.models.User
+import com.example.kantinsekre.network.ApiClient
 import com.example.kantinsekre.presentation.SharedViewModel
-import com.example.kantinsekre.util.DummyDataProvider
+import com.example.kantinsekre.utils.TokenManager
+import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
     private val sharedViewModel: SharedViewModel by viewModels()
+    private lateinit var tokenManager: TokenManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,14 +26,15 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
         supportActionBar?.hide()
         setupListeners()
+        tokenManager = TokenManager(this)
     }
 
     private fun setupListeners() {
         binding.btnLogin.setOnClickListener {
-            val username = binding.edtUsername.text.toString().trim()
+            val nama = binding.edtUsername.text.toString().trim()
             val password = binding.edtPassword.text.toString().trim()
 
-            if (username.isEmpty()) {
+            if (nama.isEmpty()) {
                 binding.edtUsername.error = "Username cannot be empty"
                 binding.edtUsername.requestFocus()
                 return@setOnClickListener
@@ -40,19 +46,29 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            val user = DummyDataProvider.login(username, password)
+            val user = User(nama, password)
+            lifecycleScope.launch {
+                try {
+                    val apiService = ApiClient.create(context = this@LoginActivity)
+                    val response = apiService.login(user)
+                    val token = response.data.token
+                    if (token != null){
+                        tokenManager.saveToken(token)
+                    }
 
-            if (user != null) {
-                sharedViewModel.setCurrentUser(user)
-                Toast.makeText(this, "Login berhasil sebagai ${user.role}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@LoginActivity, "Login berhasil sebagai ${user}", Toast.LENGTH_SHORT).show()
 
-                val intent = Intent(this, MainActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-                finish()
-            } else {
-                Toast.makeText(this, "Username atau password salah", Toast.LENGTH_SHORT).show()
-                binding.edtPassword.text?.clear()
+
+                    val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    finish()
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    Toast.makeText(this@LoginActivity, "Login gagal: ${e.message}", Toast.LENGTH_SHORT).show()
+                    binding.edtPassword.text?.clear()
+                }
             }
         }
     }
