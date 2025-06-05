@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kantinsekre.R
 import com.example.kantinsekre.adapters.TransactionAdapter
-import com.example.kantinsekre.models.Product
 //import com.example.kantinsekre.util.DummyDataProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.card.MaterialCardView

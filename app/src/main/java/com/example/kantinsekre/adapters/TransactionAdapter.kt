@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kantinsekre.R
-import com.example.kantinsekre.models.Product
 import com.google.android.material.button.MaterialButton
 import java.text.NumberFormat
 import java.util.*
