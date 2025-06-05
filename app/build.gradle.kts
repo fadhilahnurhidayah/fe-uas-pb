@@ -69,6 +69,8 @@ dependencies {
     implementation ("com.squareup.okhttp3:logging-interceptor:4.12.0")
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.androidx.legacy.support.v4)
+    implementation(libs.androidx.fragment.ktx)
 
     // Testing
     testImplementation(libs.junit)

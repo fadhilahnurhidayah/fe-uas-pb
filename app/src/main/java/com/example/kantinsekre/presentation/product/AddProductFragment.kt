@@ -8,8 +8,11 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.lifecycleScope
 import com.example.kantinsekre.databinding.DialogAddProductBinding
 import com.example.kantinsekre.models.createmenu
+import com.example.kantinsekre.network.ApiClient
+import kotlinx.coroutines.launch
 
 class AddProductDialogFragment : DialogFragment() {
 
@@ -38,11 +41,6 @@ class AddProductDialogFragment : DialogFragment() {
         val adapter = ArrayAdapter(requireContext(), R.layout.simple_dropdown_item_1line, categories)
         binding.autoCompleteCategory.setAdapter(adapter)
 
-        binding.btnNewCategory.setOnClickListener {
-            binding.layoutCategoryDropdown.visibility = View.GONE
-            binding.layoutNewCategory.visibility = View.VISIBLE
-        }
-
         binding.btnCancelNewCategory.setOnClickListener {
             binding.editTextNewCategory.setText("") // Clear input
             binding.layoutNewCategory.visibility = View.GONE
@@ -59,36 +57,42 @@ class AddProductDialogFragment : DialogFragment() {
 
     private fun addNewProduct() {
         val nama = binding.editTextName.text.toString().trim()
-        val jenis = binding.editTextPrice.text.toString().trim()
-        val harga = binding.editTextCostPrice.text.toString().trim()
+        val harga = binding.editTextPrice.text.toString().trim()
 
-        val category = if (binding.layoutNewCategory.visibility == View.VISIBLE) {
+        val jenis = if (binding.layoutNewCategory.visibility == View.VISIBLE) {
             binding.editTextNewCategory.text.toString().trim()
         } else {
             binding.autoCompleteCategory.text.toString().trim()
         }
 
-        if (nama.isEmpty() || jenis.isEmpty() || harga.isEmpty() || category.isEmpty()) {
+        if (nama.isEmpty() || harga.isEmpty() || jenis.isEmpty()) {
             Toast.makeText(requireContext(), "Please fill all fields", Toast.LENGTH_SHORT).show()
             return
         }
 
-        try {
+        val newProduct = createmenu(
+            nama = nama,
+            jenis = jenis,
+            harga = harga,
+        )
 
-            val newProductId = (System.currentTimeMillis() % 100000).toInt() + 1000 // Simple unique ID
+        lifecycleScope.launch {
+            try {
+                val apiService = ApiClient.create(requireContext())
+                val response = apiService.addMenu(newProduct)
+                println(newProduct)
 
-            val newProduct = createmenu(
-                nama = nama,
-                jenis = jenis,
-                harga = harga,
-            )
-
-            onProductAdded?.invoke(newProduct)
-
-            Toast.makeText(requireContext(), "${newProduct.nama} added!", Toast.LENGTH_SHORT).show()
-            dismiss()
-        } catch (e: NumberFormatException) {
-            Toast.makeText(requireContext(), "Price and Cost Price must be valid numbers", Toast.LENGTH_SHORT).show()
+                if (response.isSuccessful) {
+                    onProductAdded?.invoke(newProduct)
+                    Toast.makeText(requireContext(), "${newProduct.nama} added!", Toast.LENGTH_SHORT).show()
+                    dismiss()
+                } else {
+                    Toast.makeText(requireContext(), "Failed to add product", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

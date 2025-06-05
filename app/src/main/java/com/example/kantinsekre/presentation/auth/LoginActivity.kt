@@ -56,9 +56,6 @@ class LoginActivity : AppCompatActivity() {
                         tokenManager.saveToken(token)
                     }
 
-                    Toast.makeText(this@LoginActivity, "Login berhasil sebagai ${user}", Toast.LENGTH_SHORT).show()
-
-
                     val intent = Intent(this@LoginActivity, MainActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     startActivity(intent)
@@ -66,7 +63,6 @@ class LoginActivity : AppCompatActivity() {
 
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    Toast.makeText(this@LoginActivity, "Login gagal: ${e.message}", Toast.LENGTH_SHORT).show()
                     binding.edtPassword.text?.clear()
                 }
             }

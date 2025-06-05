@@ -61,11 +61,6 @@ class ProductFragment : Fragment() {
         setupAddProductButton()
         fetchMenuFromApi()
 
-        // Initialize filteredProducts after allProducts are set
-        filteredProducts.clear()
-        filteredProducts.addAll(allProducts)
-        updateProductCount()
-        productAdapter.notifyDataSetChanged()
     }
 
     private fun setupRecyclerView() {
@@ -119,7 +114,7 @@ class ProductFragment : Fragment() {
     }
 
     private fun showFilterDialog() {
-        val categories = allProducts.map { it.harga }.distinct().toTypedArray()
+        val categories = allProducts.map { it.jenis }.distinct().toTypedArray()
         val checkedItems = BooleanArray(categories.size) { true }
 
         MaterialAlertDialogBuilder(requireContext())
@@ -158,8 +153,8 @@ class ProductFragment : Fragment() {
 
     private fun showAddProductDialog() {
         val dialog = AddProductDialogFragment()
-        dialog.onProductAdded = { newProduct ->
-//            allProducts.add(newProduct)
+        dialog.onProductAdded = {
+            fetchMenuFromApi()
             filterProducts(binding.searchProducts.query?.toString())
         }
         dialog.show(childFragmentManager, "AddProductDialog")
