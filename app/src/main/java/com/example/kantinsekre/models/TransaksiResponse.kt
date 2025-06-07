@@ -32,30 +32,6 @@ data class Transaksi(
 	val tanggal: String,
 
 	@field:SerializedName("status")
-	val status: String,
+	val status: String
 
 )
-
-data class DetailTransaction(
-	val subtotal: Int,
-
-	@field:SerializedName("nama_pembeli")
-	val namaPembeli: String,
-
-	@field:SerializedName("nama_user")
-	val namaUser: String,
-
-	@field:SerializedName("tanggal")
-	val tanggal: String,
-
-	@field:SerializedName("items")
-	val items: List<ItemsItem?>
-
-)
-	data class ItemsItem(
-
-	@field:SerializedName("nama_menu")
-	val namaMenu: String? = null,
-
-	@field:SerializedName("jumlah_menu")
-	val jumlahMenu: String? = null,)

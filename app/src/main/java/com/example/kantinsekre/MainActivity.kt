@@ -8,6 +8,7 @@ import androidx.activity.viewModels
 import com.example.kantinsekre.databinding.ActivityMainBinding
 import com.example.kantinsekre.presentation.SharedViewModel
 import com.example.kantinsekre.presentation.product.ProductFragment
+import com.example.kantinsekre.presentation.report.ReportFragment
 import com.example.kantinsekre.presentation.transaction.TransactionFragment
 //import com.example.kantinsekre.presentation.report.ReportFragment
 //import com.example.kantinsekre.presentation.settings.SettingsFragment
@@ -43,10 +44,10 @@ class MainActivity : AppCompatActivity() {
                     loadFragment(TransactionFragment())
                     true
                 }
-//                R.id.navigation_report -> {
-//                    loadFragment(ReportFragment())
-//                    true
-//                }
+                R.id.navigation_report -> {
+                    loadFragment(ReportFragment())
+                    true
+                }
 //                R.id.navigation_settings -> {
 //                    loadFragment(SettingsFragment())
 //                    true

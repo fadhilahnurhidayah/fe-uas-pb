@@ -31,10 +31,14 @@ class ProductFragment : Fragment() {
             try {
                 val apiService = ApiClient.create(requireContext() )
                 val response = apiService.getAllMenu()
-                allProducts.clear()
-                allProducts.addAll(response.data)
-                if (isAdded && _binding != null) {
-                    filterProducts(binding.searchProducts.query?.toString())
+                if (response.isSuccessful && response.body()?.success == true) {
+                    allProducts.clear()
+                    response.body()?.data?.let { menuList ->
+                        allProducts.addAll(menuList)
+                    }
+                    if (isAdded && _binding != null) {
+                        filterProducts(binding.searchProducts.query?.toString())
+                    }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

@@ -2,19 +2,23 @@ package com.example.kantinsekre.models
 
 import com.google.gson.annotations.SerializedName
 
-data class MenuRequest(
-
-	@field:SerializedName("data")
-	val data: Any? = null,
+data class ProductResponse(
 
 	@field:SerializedName("success")
-	val success: Boolean? = null,
+	val success: Boolean,
 
 	@field:SerializedName("message")
-	val message: String? = null
+	val message: String,
+
+	@field:SerializedName("data")
+	val data: List<Menu>
 )
 
-data class createmenu(
+data class Menu(
+
+	@field:SerializedName("id")
+	val id: Int,
+
 	@field:SerializedName("nama")
 	val nama: String,
 

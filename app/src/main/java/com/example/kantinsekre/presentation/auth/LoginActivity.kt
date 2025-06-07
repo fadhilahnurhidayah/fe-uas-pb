@@ -10,6 +10,7 @@ import com.example.kantinsekre.MainActivity
 import com.example.kantinsekre.databinding.ActivityLoginBinding
 import com.example.kantinsekre.models.User
 import com.example.kantinsekre.network.ApiClient
+import com.example.kantinsekre.models.AuthResponse
 import com.example.kantinsekre.presentation.SharedViewModel
 import com.example.kantinsekre.utils.TokenManager
 import kotlinx.coroutines.launch
@@ -51,16 +52,17 @@ class LoginActivity : AppCompatActivity() {
                 try {
                     val apiService = ApiClient.create(context = this@LoginActivity)
                     val response = apiService.login(user)
-                    val token = response.data.token
-                    if (token != null){
-                        tokenManager.saveToken(token)
+                    if (response.isSuccessful && response.body()?.success == true) {
+                        val token = response.body()?.data?.token
+                        if (token != null) {
+                            tokenManager.saveToken(token)
+                        }
+
+                        val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        startActivity(intent)
+                        finish()
                     }
-
-                    val intent = Intent(this@LoginActivity, MainActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
-                    finish()
-
                 } catch (e: Exception) {
                     e.printStackTrace()
                     binding.edtPassword.text?.clear()
