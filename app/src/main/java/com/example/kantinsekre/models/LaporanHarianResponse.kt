@@ -1,33 +1,24 @@
 package com.example.kantinsekre.models
-
 import com.google.gson.annotations.SerializedName
 
-data class LaporanHarianResponse(
-
+data class DailyReportResponse(
 	@field:SerializedName("success")
-	val success: Boolean? = null,
-
-	@field:SerializedName("message")
-	val message: String? = null,
-
+	val success: Boolean,
 	@field:SerializedName("data")
-	val data: List<LaporanHarian?>? = null
+	val data: List<DailyReport>,
+	@field:SerializedName("message")
+	val message: String
 )
 
-data class LaporanHarian(
-
+data class DailyReport(
 	@field:SerializedName("tanggal")
-	val tanggal: String? = null,
-
+	val tanggal: String,
 	@field:SerializedName("total_transaksi")
-	val totalTransaksi: Int? = null,
-
+	val total_transaksi: Int,
 	@field:SerializedName("total_pendapatan")
-	val totalPendapatan: String? = null,
-
+	val total_pendapatan: Double,
 	@field:SerializedName("transaksi_selesai")
-	val transaksiSelesai: String? = null,
-
+	val transaksi_selesai: String,
 	@field:SerializedName("transaksi_dibatalkan")
-	val transaksiDibatalkan: String? = null
+	val transaksi_dibatalkan: String
 )

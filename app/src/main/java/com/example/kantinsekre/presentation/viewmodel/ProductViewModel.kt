@@ -1,31 +1,15 @@
 package com.example.kantinsekre.presentation.viewmodel
 
-import androidx.fragment.app.viewModels
-import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import com.example.kantinsekre.R
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import com.example.kantinsekre.models.Menu
 
-class ProductViewModel : Fragment() {
+class ProductViewModel : ViewModel() {
+    private val _products = MutableLiveData<List<Menu>>()
+    val products: LiveData<List<Menu>> = _products
 
-    companion object {
-        fun newInstance() = ProductViewModel()
-    }
-
-    private val viewModel: ProductViewModelViewModel by viewModels()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        // TODO: Use the ViewModel
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return inflater.inflate(R.layout.fragment_product_view_model, container, false)
+    fun setProducts(menuList: List<Menu>) {
+        _products.value = menuList
     }
 }

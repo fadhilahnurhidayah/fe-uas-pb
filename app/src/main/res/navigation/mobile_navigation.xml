@@ -15,7 +15,16 @@
         android:id="@+id/navigation_transaction"
         android:name="com.example.kantinsekre.presentation.transaction.TransactionFragment"
         android:label="@string/title_transaction"
-        tools:layout="@layout/fragment_transaction" />
+        tools:layout="@layout/fragment_transaction">
+        <action
+            android:id="@+id/action_transactionFragment_to_newTransactionFragment"
+            app:destination="@id/newTransactionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/newTransactionFragment"
+        android:name="com.example.kantinsekre.presentation.transaction.NewTransactionFragment"
+        android:label="Tambah Transaksi"
+        tools:layout="@layout/fragment_new_transaction" />
     <fragment
         android:id="@+id/navigation_report"
         android:name="com.example.kantinsekre.presentation.report.ReportFragment"

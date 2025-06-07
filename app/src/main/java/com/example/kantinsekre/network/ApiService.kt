@@ -1,11 +1,16 @@
+package com.example.kantinsekre.network
+
 import android.view.Menu
 import com.example.kantinsekre.models.AuthResponse
-import com.example.kantinsekre.models.MenuResponse
+import com.example.kantinsekre.models.CreateMenu
+import com.example.kantinsekre.models.ProductResponse
 import com.example.kantinsekre.models.Transaksi
 import com.example.kantinsekre.models.TransaksiResponse
 import com.example.kantinsekre.models.User
 import com.example.kantinsekre.models.UserResponse
-import com.example.kantinsekre.models.createmenu
+import com.example.kantinsekre.models.MonthlyReportResponse
+import com.example.kantinsekre.models.DailyReportResponse
+import com.example.kantinsekre.models.TransaksiRequest
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -17,10 +22,10 @@ import retrofit2.http.Path
 interface ApiService {
 
     @POST("/user/login")
-    suspend fun login(@Body request: User) : AuthResponse
+    suspend fun login(@Body request: User): Response<AuthResponse>
 
     @GET("/user")
-    suspend fun getAllUsers(): UserResponse
+    suspend fun getAllUsers(): Response<UserResponse>
 
     @POST("/register")
     suspend fun addUser(@Body user: User): Response<Unit>
@@ -32,10 +37,10 @@ interface ApiService {
     suspend fun deleteUser(@Path("id") id: String): Response<Unit>
 
     @GET("/menu")
-    suspend fun getAllMenu(): MenuResponse
+    suspend fun getAllMenu(): Response<ProductResponse>
 
     @POST("menu/")
-    suspend fun  addMenu(@Body request: createmenu): Response<Unit>
+    suspend fun addMenu(@Body request: CreateMenu): Response<Unit>
 
     @PUT("menu/{id}")
     suspend fun updateMenu(@Path("id") id: String, @Body menu: Menu): Response<Unit>
@@ -44,15 +49,27 @@ interface ApiService {
     suspend fun deleteMenu(@Path("id") id: String): Response<Unit>
 
     @GET("/transaksi")
-    suspend fun getAllTransaksi(): TransaksiResponse
+    suspend fun getAllTransaksi(): Response<TransaksiResponse>
 
     @POST("transaksi/")
-    suspend fun  addTransaksi(@Body transaksi: Transaksi): Response<Unit>
+    suspend fun addTransaksi(@Body request: TransaksiRequest): Response<Unit>
 
     @PUT("transaksi/{id}")
-    suspend fun updateTransaksi(@Path("id") id: String, @Body transaksi: Transaksi): Response<Unit>
+    suspend fun updateTransaksi(@Path("id") id: String, @Body request: TransaksiRequest): Response<Unit>
 
     @DELETE("transaksi/{id}")
-    suspend fun deletetransaksi(@Path("id") id: String): Response<Unit>
+    suspend fun deleteTransaksi(@Path("id") id: String): Response<Unit>
+
+    @GET("/laporan-harian")
+    suspend fun getLaporanHarian(): Response<DailyReportResponse>
+
+    @GET("/laporan-bulanan")
+    suspend fun getLaporanBulanan(): Response<MonthlyReportResponse>
+
+    @GET("/laporan-harian/{tanggal}")
+    suspend fun getLaporanHarianByDate(@Path("tanggal") tanggal: String): Response<DailyReportResponse>
+
+    @GET("/laporan-bulanan/{bulan}")
+    suspend fun getLaporanBulananByMonth(@Path("bulan") bulan: String): Response<MonthlyReportResponse>
 
 }

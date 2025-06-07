@@ -10,7 +10,7 @@ import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import com.example.kantinsekre.databinding.DialogAddProductBinding
-import com.example.kantinsekre.models.createmenu
+import com.example.kantinsekre.models.CreateMenu
 import com.example.kantinsekre.network.ApiClient
 import kotlinx.coroutines.launch
 
@@ -19,7 +19,7 @@ class AddProductDialogFragment : DialogFragment() {
     private var _binding: DialogAddProductBinding? = null
     private val binding get() = _binding!!
 
-    var onProductAdded: ((createmenu) -> Unit)? = null
+    var onProductAdded: ((CreateMenu) -> Unit)? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -70,7 +70,7 @@ class AddProductDialogFragment : DialogFragment() {
             return
         }
 
-        val newProduct = createmenu(
+        val newProduct = CreateMenu(
             nama = nama,
             jenis = jenis,
             harga = harga,
