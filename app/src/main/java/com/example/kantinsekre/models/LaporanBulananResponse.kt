@@ -1,7 +1,7 @@
 package com.example.kantinsekre.models
 import com.google.gson.annotations.SerializedName
 
-data class LaporanBulananResponse(
+data class MonthlyReportResponse(
 
 	@field:SerializedName("success")
 	val success: Boolean? = null,
@@ -10,10 +10,10 @@ data class LaporanBulananResponse(
 	val message: String? = null,
 
 	@field:SerializedName("data")
-	val data: List<LaporanBulanan?>? = null
+	val data: List<MonthlyReport?>? = null
 )
 
-data class LaporanBulanan(
+data class MonthlyReport(
 
 	@field:SerializedName("bulan")
 	val bulan: String? = null,
@@ -22,7 +22,7 @@ data class LaporanBulanan(
 	val totalTransaksi: Int? = null,
 
 	@field:SerializedName("total_pendapatan")
-	val totalPendapatan: String? = null,
+	val totalPendapatan: Double? = null,
 
 	@field:SerializedName("transaksi_selesai")
 	val transaksiSelesai: String? = null,

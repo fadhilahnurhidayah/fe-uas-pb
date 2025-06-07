@@ -1,41 +1,43 @@
 package com.example.kantinsekre.presentation.transaction
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kantinsekre.R
 import com.example.kantinsekre.adapters.TransactionAdapter
-//import com.example.kantinsekre.util.DummyDataProvider
+import com.example.kantinsekre.models.Transaksi
+import com.example.kantinsekre.models.TransaksiRequest
+import com.example.kantinsekre.models.ItemRequest
+import com.example.kantinsekre.network.ApiClient
+import com.example.kantinsekre.presentation.SharedViewModel
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.card.MaterialCardView
-import com.google.android.material.button.MaterialButton
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
-import java.text.NumberFormat
-import java.text.SimpleDateFormat
-import java.util.*
+import com.google.android.material.textfield.TextInputEditText
+import kotlinx.coroutines.launch
 
 class TransactionFragment : Fragment() {
 
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var emptyStateText: TextView
+    private lateinit var fabAddTransaction: FloatingActionButton
+    private lateinit var searchEditText: TextInputEditText
+    private lateinit var toolbar: MaterialToolbar
     private lateinit var transactionAdapter: TransactionAdapter
-    private val currentItems = mutableListOf<Product>()
-    private lateinit var totalTextView: TextView
-
-    private lateinit var itemCountTextView: TextView
-    private lateinit var dateTimeTextView: TextView
-    private lateinit var transactionIdTextView: TextView
-    private lateinit var addItemButton: MaterialButton
-    private lateinit var payButton: MaterialButton
-    private lateinit var clearButton: MaterialButton
-    private lateinit var emptyStateView: View
-    private lateinit var billContainer: MaterialCardView
-    private lateinit var summaryContainer: MaterialCardView
-
-
+    private val transactions = mutableListOf<Transaksi>()
+    private val filteredTransactions = mutableListOf<Transaksi>()
+    private val sharedViewModel: SharedViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,255 +50,157 @@ class TransactionFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initializeViews(view)
-        setupRecyclerView(view)
-//        setupButtons()
-        initializeTransaction()
-        updateUI()
+        setupToolbar()
+        setupRecyclerView()
+        setupSearch()
+        setupFab()
+        loadTransactions()
     }
 
     private fun initializeViews(view: View) {
-        totalTextView = view.findViewById(R.id.total_text_view)
-        itemCountTextView = view.findViewById(R.id.item_count_text_view)
-        dateTimeTextView = view.findViewById(R.id.datetime_text_view)
-        transactionIdTextView = view.findViewById(R.id.transaction_id_text_view)
-        addItemButton = view.findViewById(R.id.add_item_button)
-        payButton = view.findViewById(R.id.pay_button)
-        clearButton = view.findViewById(R.id.clear_button)
-        emptyStateView = view.findViewById(R.id.empty_state_view)
-        billContainer = view.findViewById(R.id.bill_container)
-        summaryContainer = view.findViewById(R.id.summary_container)
+        recyclerView = view.findViewById(R.id.transaction_recycler_view)
+        emptyStateText = view.findViewById(R.id.empty_state_text)
+        fabAddTransaction = view.findViewById(R.id.fab_add_transaction)
+        searchEditText = view.findViewById(R.id.search_edit_text)
+        toolbar = view.findViewById(R.id.toolbar)
     }
 
-    private fun setupRecyclerView(view: View) {
-        val recyclerView = view.findViewById<RecyclerView>(R.id.transaction_recycler_view)
-
-        transactionAdapter = TransactionAdapter(currentItems) { product, position ->
-            showRemoveItemDialog(product, position)
-        }
-
-        recyclerView.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = transactionAdapter
-        }
-    }
-
-//    private fun setupButtons() {
-//        addItemButton.setOnClickListener {
-//            showAddItemDialog()
-//        }
-//
-//        payButton.setOnClickListener {
-//            if (currentItems.isNotEmpty()) {
-//                showPaymentConfirmationDialog()
-//            } else {
-//                Snackbar.make(requireView(), "Tidak ada item untuk dibayar", Snackbar.LENGTH_SHORT).show()
-//            }
-//        }
-//
-//        clearButton.setOnClickListener {
-//            if (currentItems.isNotEmpty()) {
-//                showClearConfirmationDialog()
-//            }
-//        }
-//    }
-
-    private fun initializeTransaction() {
-        // Set transaction ID and datetime
-        val transactionId = "TXN${System.currentTimeMillis().toString().takeLast(8)}"
-        val currentDateTime = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale("id", "ID")).format(Date())
-
-        transactionIdTextView.text = transactionId
-        dateTimeTextView.text = currentDateTime
-    }
-
-//    private fun showAddItemDialog() {
-//        val availableProducts = DummyDataProvider.productList
-//        if (availableProducts.isEmpty()) {
-//            Snackbar.make(requireView(), "Tidak ada produk tersedia", Snackbar.LENGTH_SHORT).show()
-//            return
-//        }
-//
-//        val productNames = availableProducts.map {
-//            "${it.name}\n${formatCurrency(it.price.toDouble())}"
-//        }.toTypedArray()
-//
-//        MaterialAlertDialogBuilder(requireContext())
-//            .setTitle("Pilih Item")
-//            .setItems(productNames) { _, which ->
-//                val selectedProduct = availableProducts[which]
-//                showQuantityDialog(selectedProduct)
-//            }
-//            .setNegativeButton("Batal", null)
-//            .show()
-//    }
-
-    private fun showQuantityDialog(product: Product) {
-        val quantities = arrayOf("1", "2", "3", "4", "5", "10")
-
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Pilih Jumlah untuk ${product.name}")
-            .setItems(quantities) { _, which ->
-                val quantity = when (which) {
-                    5 -> 10
-                    else -> which + 1
+    private fun setupToolbar() {
+        toolbar.title = "Transaksi"
+        toolbar.inflateMenu(R.menu.transaction_menu)
+        toolbar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.action_add_struk -> {
+                    findNavController().navigate(R.id.action_transactionFragment_to_newTransactionFragment)
+                    true
                 }
-                addItemToTransaction(product, quantity)
+                else -> false
             }
-            .setNegativeButton("Batal", null)
-            .show()
-    }
-
-    private fun addItemToTransaction(product: Product, quantity: Int) {
-        try {
-            val existingItemIndex = currentItems.indexOfFirst { it.id == product.id }
-
-            if (existingItemIndex != -1) {
-                val existingItem = currentItems[existingItemIndex]
-                currentItems[existingItemIndex] = existingItem.copy(quantity = existingItem.quantity + quantity)
-                transactionAdapter.notifyItemChanged(existingItemIndex)
-            } else {
-                val newItem = product.copy(quantity = quantity)
-                currentItems.add(newItem)
-                transactionAdapter.notifyItemInserted(currentItems.size - 1)
-            }
-
-            updateUI()
-            Snackbar.make(requireView(), "${product.name} ditambahkan ke transaksi", Snackbar.LENGTH_SHORT).show()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Snackbar.make(requireView(), "Gagal menambahkan item", Snackbar.LENGTH_SHORT).show()
         }
     }
 
-    private fun showRemoveItemDialog(product: Product, position: Int) {
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Hapus Item")
-            .setMessage("Hapus ${product.name} dari transaksi?")
-            .setPositiveButton("Hapus") { _, _ ->
-                removeItem(product, position)
-            }
-            .setNegativeButton("Batal", null)
-            .show()
+    private fun setupRecyclerView() {
+        transactionAdapter = TransactionAdapter(
+            transactions = filteredTransactions,
+            onCancelClick = { transaction -> cancelTransaction(transaction) },
+            onCompleteClick = { transaction -> completeTransaction(transaction) }
+        )
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        recyclerView.adapter = transactionAdapter
     }
 
-    private fun removeItem(product: Product, position: Int) {
-        try {
-            if (position in 0 until currentItems.size) {
-                val removedItem = currentItems.removeAt(position)
-                transactionAdapter.notifyItemRemoved(position)
-                updateUI()
+    private fun setupSearch() {
+        searchEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                filterTransactions(s.toString())
+            }
+        })
+    }
 
-                Snackbar.make(requireView(), "${removedItem.name} dihapus", Snackbar.LENGTH_LONG)
-                    .setAction("UNDO") {
-                        currentItems.add(position, removedItem)
-                        transactionAdapter.notifyItemInserted(position)
-                        updateUI()
+    private fun setupFab() {
+        fabAddTransaction.setOnClickListener {
+            findNavController().navigate(R.id.action_transactionFragment_to_newTransactionFragment)
+        }
+    }
+
+    private fun filterTransactions(query: String) {
+        filteredTransactions.clear()
+        if (query.isEmpty()) {
+            filteredTransactions.addAll(transactions)
+        } else {
+            filteredTransactions.addAll(
+                transactions.filter {
+                    it.namaPembeli?.contains(query, ignoreCase = true) == true ||
+                    it.tanggal.contains(query, ignoreCase = true)
+                }
+            )
+        }
+        transactionAdapter.notifyDataSetChanged()
+        updateEmptyState()
+    }
+
+    private fun updateEmptyState() {
+        if (filteredTransactions.isEmpty()) {
+            emptyStateText.visibility = View.VISIBLE
+            recyclerView.visibility = View.GONE
+        } else {
+            emptyStateText.visibility = View.GONE
+            recyclerView.visibility = View.VISIBLE
+        }
+    }
+
+    private fun loadTransactions() {
+        lifecycleScope.launch {
+            try {
+                val apiService = ApiClient.create(requireContext())
+                val response = apiService.getAllTransaksi()
+                if (response.isSuccessful && response.body()?.success == true) {
+                    transactions.clear()
+                    response.body()?.data?.filterNotNull()?.let { transactionList ->
+                        transactions.addAll(transactionList)
                     }
-                    .show()
+                    filterTransactions(searchEditText.text.toString())
+                } else {
+                    Snackbar.make(requireView(), "Gagal memuat transaksi", Snackbar.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Snackbar.make(requireView(), "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Snackbar.make(requireView(), "Gagal menghapus item", Snackbar.LENGTH_SHORT).show()
         }
     }
 
-    private fun showPaymentConfirmationDialog() {
-        val total = calculateTotal()
-
-        val message = """
-            Total: ${formatCurrency(total)}
-            
-            Lanjutkan pembayaran?
-        """.trimIndent()
-
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Konfirmasi Pembayaran")
-            .setMessage(message)
-            .setPositiveButton("Bayar Sekarang") { _, _ ->
-                processTransaction()
+    private fun cancelTransaction(transaction: Transaksi) {
+        lifecycleScope.launch {
+            try {
+                val apiService = ApiClient.create(requireContext())
+                val currentUser = sharedViewModel.getCurrentUser()
+                val request = TransaksiRequest(
+                    namaPembeli = transaction.namaPembeli ?: "",
+                    namaUser = currentUser?.nama ?: "admin",
+                    tanggal = transaction.tanggal,
+                    items = emptyList() // TODO: Get actual items from transaction
+                )
+                val response = apiService.updateTransaksi(
+                    id = transaction.id.toString(),
+                    request = request
+                )
+                if (response.isSuccessful) {
+                    loadTransactions()
+                    Snackbar.make(requireView(), "Transaksi dibatalkan", Snackbar.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Snackbar.make(requireView(), "Gagal membatalkan transaksi: ${e.message}", Snackbar.LENGTH_SHORT).show()
             }
-            .setNegativeButton("Batal", null)
-            .show()
-    }
-
-    private fun showClearConfirmationDialog() {
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Bersihkan Transaksi")
-            .setMessage("Hapus semua item dari transaksi ini?")
-            .setPositiveButton("Bersihkan") { _, _ ->
-                clearTransaction()
-            }
-            .setNegativeButton("Batal", null)
-            .show()
-    }
-
-    private fun clearTransaction() {
-        try {
-            currentItems.clear()
-            transactionAdapter.notifyDataSetChanged()
-            updateUI()
-            Snackbar.make(requireView(), "Transaksi dibersihkan", Snackbar.LENGTH_SHORT).show()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Snackbar.make(requireView(), "Gagal membersihkan transaksi", Snackbar.LENGTH_SHORT).show()
         }
     }
 
-    private fun updateUI() {
-        try {
-            val total = calculateTotal()
-            val itemCount = currentItems.size
-            val totalQuantity = currentItems.sumOf { it.quantity }
-
-            totalTextView.text = formatCurrency(total)
-            itemCountTextView.text = "$itemCount item${if (itemCount != 1) "s" else ""} ($totalQuantity qty)"
-
-            if (currentItems.isEmpty()) {
-                emptyStateView.visibility = View.VISIBLE
-                billContainer.visibility = View.GONE
-                summaryContainer.visibility = View.GONE
-                payButton.isEnabled = false
-                clearButton.isEnabled = false
-            } else {
-                emptyStateView.visibility = View.GONE
-                billContainer.visibility = View.VISIBLE
-                summaryContainer.visibility = View.VISIBLE
-                payButton.isEnabled = true
-                clearButton.isEnabled = true
+    private fun completeTransaction(transaction: Transaksi) {
+        lifecycleScope.launch {
+            try {
+                val apiService = ApiClient.create(requireContext())
+                val currentUser = sharedViewModel.getCurrentUser()
+                val request = TransaksiRequest(
+                    namaPembeli = transaction.namaPembeli ?: "",
+                    namaUser = currentUser?.nama ?: "admin",
+                    tanggal = transaction.tanggal,
+                    items = emptyList() // TODO: Get actual items from transaction
+                )
+                val response = apiService.updateTransaksi(
+                    id = transaction.id.toString(),
+                    request = request
+                )
+                if (response.isSuccessful) {
+                    loadTransactions()
+                    Snackbar.make(requireView(), "Transaksi selesai", Snackbar.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Snackbar.make(requireView(), "Gagal menyelesaikan transaksi: ${e.message}", Snackbar.LENGTH_SHORT).show()
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            totalTextView.text = formatCurrency(0.0)
-            itemCountTextView.text = "0 items"
-        }
-    }
-
-    private fun calculateTotal(): Double {
-        return currentItems.sumOf { it.price.toDouble() * it.quantity.toDouble() }
-    }
-
-    private fun formatCurrency(amount: Double): String {
-        return NumberFormat.getCurrencyInstance(Locale("in", "ID")).format(amount)
-    }
-
-    private fun processTransaction() {
-        try {
-            val total = calculateTotal()
-
-            // Save transaction to dummy data or database here
-
-            currentItems.clear()
-            transactionAdapter.notifyDataSetChanged()
-            updateUI()
-
-            Snackbar.make(requireView(),
-                "Pembayaran berhasil! Total: ${formatCurrency(total)}",
-                Snackbar.LENGTH_LONG
-            ).show()
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Snackbar.make(requireView(), "Pembayaran gagal. Silakan coba lagi.", Snackbar.LENGTH_SHORT).show()
         }
     }
 }
