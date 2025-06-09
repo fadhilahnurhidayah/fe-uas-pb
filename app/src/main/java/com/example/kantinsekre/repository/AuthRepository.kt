@@ -31,14 +31,6 @@ class AuthRepository(private val context: Context) {
         }
     }
 
-    suspend fun getUserById(id: String): Response<UserResponse> {
-        return try {
-            apiService.getUserById(id)
-        } catch (e: Exception) {
-            throw e
-        }
-    }
-
     suspend fun getCurrentUser(): Response<CurrentUser> {
         return try {
             apiService.getCurrentUser()

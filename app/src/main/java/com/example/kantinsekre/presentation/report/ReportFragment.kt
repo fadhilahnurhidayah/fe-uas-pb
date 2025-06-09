@@ -137,15 +137,43 @@ class ReportFragment : Fragment() {
                     showError("Belum ada data laporan harian")
                     return
                 }
+                
+                laporanHarian.forEach { report ->
+                    Log.d(TAG, "Tanggal: '${report.tanggal}', Pendapatan: '${report.total_pendapatan}'")
+                }
 
                 // Format tanggal untuk perbandingan (yyyy-MM-dd)
                 val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                 val today = dateFormat.format(Date())
+                Log.d(TAG, "Today formatted: '$today'")
 
-                // Hitung total untuk hari ini
-                val todayReport = laporanHarian.firstOrNull { it.tanggal == today }
-                val todaySales = todayReport?.total_pendapatan?.toIntOrNull() ?: 0
+                // Hitung total untuk hari ini - coba beberapa format tanggal
+                var todayReport = laporanHarian.firstOrNull { it.tanggal == today }
+
+                // Jika tidak ditemukan dengan format yyyy-MM-dd, coba format lain
+                if (todayReport == null) {
+                    val todayFormats = listOf(
+                        SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()),
+                        SimpleDateFormat("yyyy/MM/dd", Locale.getDefault()),
+                        SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()),
+                        SimpleDateFormat("EEEE, d MMMM yyyy", Locale("id", "ID"))
+                    )
+
+                    for (format in todayFormats) {
+                        val todayFormatted = format.format(Date())
+                        Log.d(TAG, "Trying format: '$todayFormatted'")
+                        todayReport = laporanHarian.firstOrNull { it.tanggal == todayFormatted }
+                        if (todayReport != null) {
+                            Log.d(TAG, "Found match with format: '$todayFormatted'")
+                            break
+                        }
+                    }
+                }
+
+                val todaySales = todayReport?.total_pendapatan?.toDoubleOrNull()?.toInt() ?: 0
                 val todayTransactions = todayReport?.total_transaksi ?: 0
+
+                Log.d(TAG, "Today sales: $todaySales, Today transactions: $todayTransactions")
 
                 // Hitung total untuk minggu ini
                 val calendar = Calendar.getInstance()
@@ -164,7 +192,7 @@ class ReportFragment : Fragment() {
                         false
                     }
                 }
-                val weekSales = weekReports.sumOf { it.total_pendapatan.toIntOrNull() ?: 0 }
+                val weekSales = weekReports.sumOf { it.total_pendapatan.toDoubleOrNull()?.toInt() ?: 0 }
 
                 // Update UI dengan data harian
                 updateDailyUI(todaySales, weekSales, todayTransactions)
@@ -195,7 +223,7 @@ class ReportFragment : Fragment() {
                 val currentMonth = SimpleDateFormat("yyyy-MM", Locale.getDefault()).format(Date())
                 val thisMonthReport = laporanBulanan.firstOrNull { report -> report.bulan == currentMonth }
 
-                val monthSales = thisMonthReport?.totalPendapatan?.toIntOrNull() ?: 0
+                val monthSales = thisMonthReport?.totalPendapatan?.toDoubleOrNull()?.toInt() ?: 0
                 val monthlyTransactions = thisMonthReport?.totalTransaksi ?: 0
 
                 // Ambil data items dari bulan ini saja
