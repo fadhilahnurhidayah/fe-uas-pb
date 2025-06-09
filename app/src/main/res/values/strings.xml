@@ -1,15 +1,12 @@
 <resources>
-    <!-- App Info -->
     <string name="app_name">KantinSekre</string>
     <string name="app_logo">Application Logo</string>
 
-    <!-- Navigation -->
     <string name="title_product">Product</string>
     <string name="title_transaction">Transaction</string>
     <string name="title_report">Report</string>
     <string name="title_settings">Settings</string>
 
-    <!-- Login -->
     <string name="login">Login</string>
     <string name="login_button">Login</string>
     <string name="username_hint">Username/Email</string>
@@ -20,7 +17,6 @@
     <string name="register_text">Daftar</string>
     <string name="welcome_back">Selamat datang kembali!</string>
 
-    <!-- Register -->
     <string name="register">Daftar</string>
     <string name="register_button">Buat Akun</string>
     <string name="create_account">Buat akun baru</string>
@@ -28,20 +24,16 @@
     <string name="already_have_account">Sudah punya akun?</string>
     <string name="login_here">Masuk di sini</string>
 
-    <!-- Error Messages -->
     <string name="error_username_empty">Username tidak boleh kosong</string>
     <string name="error_password_empty">Password tidak boleh kosong</string>
     <string name="error_password_length">Password minimal 6 karakter</string>
     <string name="registration_not_available">Fitur pendaftaran belum tersedia</string>
 
-    <!-- Utilities -->
     <string name="search">Search</string>
     <string name="filter">Filter</string>
 
-    <!-- Menu Management -->
     <string name="menu_image_description">Food menu item image</string>
     <string name="edit_menu_item">Edit menu item</string>
     <string name="delete_menu_item">Delete menu item</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

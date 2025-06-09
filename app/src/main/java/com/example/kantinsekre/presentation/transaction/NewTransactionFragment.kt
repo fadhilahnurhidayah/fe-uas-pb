@@ -1,5 +1,6 @@
 package com.example.kantinsekre.presentation.transaction
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.InputFilter
 import android.view.LayoutInflater
@@ -9,7 +10,7 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -18,16 +19,19 @@ import com.example.kantinsekre.adapters.TransactionItemAdapter
 import com.example.kantinsekre.models.ItemRequest
 import com.example.kantinsekre.models.Menu
 import com.example.kantinsekre.models.TransaksiRequest
-import com.example.kantinsekre.network.ApiClient
-import com.example.kantinsekre.presentation.SharedViewModel
+import com.example.kantinsekre.presentation.viewmodel.SharedViewModel
+import com.example.kantinsekre.presentation.state.UiState
+import com.example.kantinsekre.presentation.viewmodel.TransactionViewModel
+import com.example.kantinsekre.presentation.viewmodel.ViewModelFactory
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
-import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 class NewTransactionFragment : Fragment() {
 
@@ -40,6 +44,11 @@ class NewTransactionFragment : Fragment() {
     private val sharedViewModel: SharedViewModel by activityViewModels()
     private lateinit var adapter: TransactionItemAdapter
     private var products: List<Menu> = emptyList()
+
+    // ViewModel dengan ViewModelFactory
+    private val transactionViewModel: TransactionViewModel by viewModels {
+        ViewModelFactory(requireContext())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,7 +63,59 @@ class NewTransactionFragment : Fragment() {
         initializeViews(view)
         setupRecyclerView()
         setupButtons()
-        loadProducts()
+        observeViewModel()
+
+        // Load products menggunakan ViewModel
+        transactionViewModel.fetchAllProducts()
+    }
+
+    /**
+     * Observe ViewModel untuk perubahan data
+     */
+    @SuppressLint("SetTextI18n")
+    private fun observeViewModel() {
+        // Observe products
+        transactionViewModel.products.observe(viewLifecycleOwner) { uiState ->
+            when (uiState) {
+                is UiState.Loading -> {
+                    // Tampilkan loading indicator jika diperlukan
+                }
+                is UiState.Success -> {
+                    products = uiState.data
+                }
+                is UiState.Error -> {
+                    Snackbar.make(requireView(), uiState.message, Snackbar.LENGTH_SHORT).show()
+                }
+                is UiState.Idle -> {
+                    // State awal, tidak perlu action
+                }
+            }
+        }
+
+        // Observe add transaction result
+        transactionViewModel.addTransactionResult.observe(viewLifecycleOwner) { uiState ->
+            when (uiState) {
+                is UiState.Loading -> {
+                    saveTransactionButton.isEnabled = false
+                    saveTransactionButton.text = "Saving..."
+                }
+                is UiState.Success -> {
+                    saveTransactionButton.isEnabled = true
+                    saveTransactionButton.text = "Save Transaction"
+                    Snackbar.make(requireView(), "Transaksi berhasil disimpan", Snackbar.LENGTH_SHORT).show()
+                    findNavController().navigateUp()
+                }
+                is UiState.Error -> {
+                    saveTransactionButton.isEnabled = true
+                    saveTransactionButton.text = "Save Transaction"
+                    Snackbar.make(requireView(), uiState.message, Snackbar.LENGTH_SHORT).show()
+                }
+                is UiState.Idle -> {
+                    saveTransactionButton.isEnabled = true
+                    saveTransactionButton.text = "Save Transaction"
+                }
+            }
+        }
     }
 
     private fun initializeViews(view: View) {
@@ -78,7 +139,7 @@ class NewTransactionFragment : Fragment() {
         addItemButton.setOnClickListener {
             if (products.isEmpty()) {
                 Snackbar.make(requireView(), "Memuat daftar menu...", Snackbar.LENGTH_SHORT).show()
-                loadProducts()
+                transactionViewModel.fetchAllProducts() // Refresh menggunakan ViewModel
                 return@setOnClickListener
             }
             showAddItemDialog()
@@ -89,25 +150,8 @@ class NewTransactionFragment : Fragment() {
         }
     }
 
-    private fun loadProducts() {
-        lifecycleScope.launch {
-            try {
-                val apiService = ApiClient.create(requireContext())
-                val response = apiService.getAllMenu()
-                if (response.isSuccessful && response.body()?.success == true) {
-                    products = response.body()?.data ?: emptyList()
-                } else {
-                    Snackbar.make(requireView(), "Gagal memuat daftar menu", Snackbar.LENGTH_SHORT).show()
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Snackbar.make(requireView(), "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
-            }
-        }
-    }
-
     private fun showAddItemDialog() {
-        val productNames = products.map { "${it.nama} - ${formatCurrency(it.harga?.toDoubleOrNull() ?: 0.0)}" }.toTypedArray()
+        val productNames = products.map { "${it.nama} - ${formatCurrency(it.harga.toDoubleOrNull() ?: 0.0)}" }.toTypedArray()
         var selectedProduct: Menu? = null
         var selectedIndex = 0
 
@@ -141,7 +185,7 @@ class NewTransactionFragment : Fragment() {
             filters = arrayOf(InputFilter.LengthFilter(3))
         }
 
-        val price = product.harga?.toDoubleOrNull() ?: 0.0
+        val price = product.harga.toDoubleOrNull() ?: 0.0
         val dialog = MaterialAlertDialogBuilder(requireContext())
             .setTitle("Jumlah ${product.nama}")
             .setMessage("Harga: ${formatCurrency(price)}")
@@ -185,13 +229,14 @@ class NewTransactionFragment : Fragment() {
         return NumberFormat.getCurrencyInstance(Locale("id", "ID")).format(amount)
     }
 
+    @SuppressLint("SetTextI18n")
     private fun updateTotalAmount() {
         var total = 0.0
         for (item in items) {
             val product = products.find { it.nama == item.namaMenu }
             product?.let {
                 val quantity = item.jumlahMenu?.toIntOrNull() ?: 0
-                val price = it.harga?.toDoubleOrNull() ?: 0.0
+                val price = it.harga.toDoubleOrNull() ?: 0.0
                 total += (price * quantity)
             }
         }
@@ -211,31 +256,30 @@ class NewTransactionFragment : Fragment() {
             return
         }
 
-        lifecycleScope.launch {
-            try {
-                val apiService = ApiClient.create(requireContext())
-                val currentUser = sharedViewModel.getCurrentUser()
-                val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-                
-                val request = TransaksiRequest(
-                    namaPembeli = customerName,
-                    namaUser = currentUser?.nama ?: "admin",
-                    tanggal = currentDate,
-                    items = items
-                )
 
-                val response = apiService.addTransaksi(request)
-                if (response.isSuccessful) {
-                    Snackbar.make(requireView(), "Transaksi berhasil disimpan", Snackbar.LENGTH_SHORT).show()
-                    findNavController().navigateUp()
-                } else {
-                    Snackbar.make(requireView(), "Gagal menyimpan transaksi", Snackbar.LENGTH_SHORT).show()
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Snackbar.make(requireView(), "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
-            }
+        // Get current user data
+        val currentUser = sharedViewModel.getCurrentUser()
+
+        // Format tanggal dengan timezone Indonesia
+        val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).apply {
+            timeZone = TimeZone.getTimeZone("Asia/Jakarta")
+        }.format(Date())
+
+        val userName = if (currentUser != null) {
+            "${currentUser.nama}"
+        } else {
+            "owner"
         }
+
+        val request = TransaksiRequest(
+            namaPembeli = customerName,
+            namaUser = userName,
+            tanggal = currentDate,
+            status = "pending",
+            items = items
+        )
+
+        transactionViewModel.addTransaction(request)
     }
 } 
 

@@ -14,6 +14,9 @@ data class TransaksiRequest(
 	@field:SerializedName("tanggal")
 	val tanggal: String,
 
+	@field:SerializedName("status")
+	val status: String? = null,
+
 	@field:SerializedName("items")
 	val items: List<ItemRequest?>
 
@@ -24,4 +27,4 @@ data class TransaksiRequest(
 	val namaMenu: String? = null,
 
 	@field:SerializedName("jumlah_menu")
-	val jumlahMenu: String? = null,)
+	val jumlahMenu: String? = null, )

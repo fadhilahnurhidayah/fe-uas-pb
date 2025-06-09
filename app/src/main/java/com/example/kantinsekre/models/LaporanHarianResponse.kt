@@ -16,7 +16,7 @@ data class DailyReport(
 	@field:SerializedName("total_transaksi")
 	val total_transaksi: Int,
 	@field:SerializedName("total_pendapatan")
-	val total_pendapatan: Double,
+	val total_pendapatan: String,
 	@field:SerializedName("transaksi_selesai")
 	val transaksi_selesai: String,
 	@field:SerializedName("transaksi_dibatalkan")

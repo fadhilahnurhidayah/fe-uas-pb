@@ -7,14 +7,17 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.kantinsekre.adapters.ProductAdapter
 import com.example.kantinsekre.databinding.FragmentProductBinding
 import com.example.kantinsekre.models.Menu
-import com.example.kantinsekre.network.ApiClient
+import com.example.kantinsekre.presentation.viewmodel.SharedViewModel
+import com.example.kantinsekre.presentation.state.UiState
+import com.example.kantinsekre.presentation.viewmodel.ProductViewModel
+import com.example.kantinsekre.presentation.viewmodel.ViewModelFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.coroutines.launch
 
 class ProductFragment : Fragment() {
 
@@ -22,30 +25,16 @@ class ProductFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val allProducts = mutableListOf<Menu>()
-
     private val filteredProducts = mutableListOf<Menu>()
     private lateinit var productAdapter: ProductAdapter
 
-    private fun fetchMenuFromApi() {
-        lifecycleScope.launch {
-            try {
-                val apiService = ApiClient.create(requireContext() )
-                val response = apiService.getAllMenu()
-                if (response.isSuccessful && response.body()?.success == true) {
-                    allProducts.clear()
-                    response.body()?.data?.let { menuList ->
-                        allProducts.addAll(menuList)
-                    }
-                    if (isAdded && _binding != null) {
-                        filterProducts(binding.searchProducts.query?.toString())
-                    }
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Toast.makeText(requireContext(), "Gagal memuat menu: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
-        }
+    // ViewModel dengan ViewModelFactory
+    private val productViewModel: ProductViewModel by viewModels {
+        ViewModelFactory(requireContext())
     }
+
+    // SharedViewModel untuk user data
+    private val sharedViewModel: SharedViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -63,13 +52,71 @@ class ProductFragment : Fragment() {
         setupSearchView()
         setupFilterButton()
         setupAddProductButton()
-        fetchMenuFromApi()
+        setupWelcomeMessage()
+        setupObservers()
 
+        // Fetch data menggunakan ViewModel
+        productViewModel.fetchAllMenu()
+    }
+
+    /**
+     * Setup observers untuk ViewModel
+     */
+    private fun setupObservers() {
+        // Observe products data
+        productViewModel.products.observe(viewLifecycleOwner) { uiState ->
+            when (uiState) {
+                is UiState.Loading -> {
+                    // Tampilkan loading indicator jika diperlukan
+                    // binding.progressBar.visibility = View.VISIBLE
+                }
+                is UiState.Success -> {
+                    // binding.progressBar.visibility = View.GONE
+                    allProducts.clear()
+                    allProducts.addAll(uiState.data)
+                    filterProducts(binding.searchProducts.query?.toString())
+                }
+                is UiState.Error -> {
+                    // binding.progressBar.visibility = View.GONE
+                    Toast.makeText(requireContext(), uiState.message, Toast.LENGTH_SHORT).show()
+                }
+                is UiState.Idle -> {
+                    // State awal, tidak perlu action
+                }
+            }
+        }
+
+        // Observe delete product result
+        productViewModel.deleteProductResult.observe(viewLifecycleOwner) { uiState ->
+            when (uiState) {
+                is UiState.Loading -> {
+                    // Show loading if needed
+                }
+                is UiState.Success -> {
+                    Toast.makeText(requireContext(), "Menu berhasil dihapus", Toast.LENGTH_SHORT).show()
+                    productViewModel.resetDeleteProductResult()
+                }
+                is UiState.Error -> {
+                    Toast.makeText(requireContext(), "Gagal menghapus menu: ${uiState.message}", Toast.LENGTH_SHORT).show()
+                    productViewModel.resetDeleteProductResult()
+                }
+                is UiState.Idle -> {
+                    // State awal, tidak perlu action
+                }
+            }
+        }
     }
 
     private fun setupRecyclerView() {
-        productAdapter = ProductAdapter(filteredProducts) { product ->
-        }
+        productAdapter = ProductAdapter(
+            products = filteredProducts,
+            onProductClick = { product ->
+                // Handle product click if needed
+            },
+            onDeleteClick = { product ->
+                showDeleteConfirmationDialog(product)
+            }
+        )
 
         binding.productRecyclerView.apply {
             layoutManager = GridLayoutManager(requireContext(), 2)
@@ -155,16 +202,43 @@ class ProductFragment : Fragment() {
         }
     }
 
+    /**
+     * Setup welcome message dengan data user
+     */
+    private fun setupWelcomeMessage() {
+        // Observe current user dari SharedViewModel
+        sharedViewModel.currentUser.observe(viewLifecycleOwner) { currentUser ->
+            if (currentUser != null) {
+                val welcomeText = "Selamat datang, ${currentUser.nama}!"
+                binding.welcomeMessage.text = welcomeText
+            } else {
+                binding.welcomeMessage.text = "Selamat datang!"
+            }
+        }
+    }
+
     private fun showAddProductDialog() {
         val dialog = AddProductDialogFragment()
         dialog.onProductAdded = {
-            fetchMenuFromApi()
-            filterProducts(binding.searchProducts.query?.toString())
+            // Refresh data menggunakan ViewModel
+            productViewModel.fetchAllMenu()
         }
         dialog.show(childFragmentManager, "AddProductDialog")
     }
 
-
+    /**
+     * Menampilkan dialog konfirmasi untuk menghapus menu
+     */
+    private fun showDeleteConfirmationDialog(menu: Menu) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Hapus Menu")
+            .setMessage("Apakah Anda yakin ingin menghapus menu \"${menu.nama}\"?\n\nTindakan ini tidak dapat dibatalkan.")
+            .setPositiveButton("Ya, Hapus") { _, _ ->
+                productViewModel.deleteMenu(menu.id.toString())
+            }
+            .setNegativeButton("Batal", null)
+            .show()
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()

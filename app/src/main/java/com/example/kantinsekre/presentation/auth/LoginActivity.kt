@@ -1,25 +1,24 @@
 package com.example.kantinsekre.presentation.auth
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
 import com.example.kantinsekre.MainActivity
 import com.example.kantinsekre.databinding.ActivityLoginBinding
-import com.example.kantinsekre.models.User
-import com.example.kantinsekre.network.ApiClient
-import com.example.kantinsekre.presentation.SharedViewModel
-import com.example.kantinsekre.utils.TokenManager
-import kotlinx.coroutines.launch
+import com.example.kantinsekre.presentation.viewmodel.SharedViewModel
+import com.example.kantinsekre.presentation.state.UiState
+import com.example.kantinsekre.presentation.viewmodel.AuthViewModel
+import com.example.kantinsekre.presentation.viewmodel.ViewModelFactory
+import com.example.kantinsekre.util.TokenManager
 
-/**
- * Activity untuk menangani proses login user
- */
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
     private val sharedViewModel: SharedViewModel by viewModels()
+    private val authViewModel: AuthViewModel by viewModels { ViewModelFactory(this) }
     private lateinit var tokenManager: TokenManager
 
     companion object {
@@ -31,6 +30,8 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setupView()
         setupTokenManager()
+        initializeSharedViewModel()
+        observeViewModel()
     }
 
     private fun setupView() {
@@ -42,6 +43,10 @@ class LoginActivity : AppCompatActivity() {
 
     private fun setupTokenManager() {
         tokenManager = TokenManager(this)
+    }
+
+    private fun initializeSharedViewModel() {
+        sharedViewModel.initialize(authViewModel)
     }
 
     private fun setupLoginButton() {
@@ -80,37 +85,62 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun performLogin(username: String, password: String) {
-        val user = User(username, password)
-        lifecycleScope.launch {
-            try {
-                val apiService = ApiClient.create(context = this@LoginActivity)
-                val response = apiService.login(user)
-                
-                if (response.isSuccessful && response.body()?.success == true) {
-                    handleSuccessfulLogin(response.body()?.data?.token)
-                } else {
-                    handleFailedLogin()
+        authViewModel.login(username, password)
+    }
+
+    private fun observeViewModel() {
+        authViewModel.loginResult.observe(this) { uiState ->
+            when (uiState) {
+                is UiState.Loading -> {
+                    showLoading(true)
                 }
-            } catch (e: Exception) {
-                handleLoginError(e)
+                is UiState.Success -> {
+                    showLoading(false)
+                    handleSuccessfulLogin(uiState.data.data?.token)
+                }
+                is UiState.Error -> {
+                    showLoading(false)
+                    handleLoginError(uiState.message)
+                }
+                is UiState.Idle -> {
+                    showLoading(false)
+                }
+            }
+        }
+
+        // SharedViewModel automatically observes AuthViewModel.currentUser
+        // No need to manually set current user here
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun showLoading(isLoading: Boolean) {
+        binding.apply {
+            if (isLoading) {
+                btnLogin.isEnabled = false
+                btnLogin.text = "Loading..."
+                progressBar.visibility = View.VISIBLE
+            } else {
+                btnLogin.isEnabled = true
+                btnLogin.text = "MASUK"
+                progressBar.visibility = View.GONE
             }
         }
     }
 
     private fun handleSuccessfulLogin(token: String?) {
         token?.let { tokenManager.saveToken(it) }
+
+        // Gunakan fetchCurrentUser untuk mendapatkan data user yang sedang login
+        authViewModel.fetchCurrentUser()
+
+        Toast.makeText(this, "Login berhasil", Toast.LENGTH_SHORT).show()
         navigateToMainActivity()
     }
 
-    private fun handleFailedLogin() {
-        Toast.makeText(this, "Login gagal", Toast.LENGTH_SHORT).show()
+    private fun handleLoginError(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
         binding.edtPassword.text?.clear()
-    }
-
-    private fun handleLoginError(error: Exception) {
-        error.printStackTrace()
-        Toast.makeText(this, "Terjadi kesalahan: ${error.message}", Toast.LENGTH_SHORT).show()
-        binding.edtPassword.text?.clear()
+        binding.edtPassword.requestFocus()
     }
 
     private fun navigateToMainActivity() {

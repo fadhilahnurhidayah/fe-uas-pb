@@ -1,6 +1,5 @@
 package com.example.kantinsekre.presentation.product
 
-import android.R
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,11 +7,12 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.viewModels
 import com.example.kantinsekre.databinding.DialogAddProductBinding
 import com.example.kantinsekre.models.CreateMenu
-import com.example.kantinsekre.network.ApiClient
-import kotlinx.coroutines.launch
+import com.example.kantinsekre.presentation.state.UiState
+import com.example.kantinsekre.presentation.viewmodel.ProductViewModel
+import com.example.kantinsekre.presentation.viewmodel.ViewModelFactory
 
 class AddProductDialogFragment : DialogFragment() {
 
@@ -20,6 +20,11 @@ class AddProductDialogFragment : DialogFragment() {
     private val binding get() = _binding!!
 
     var onProductAdded: ((CreateMenu) -> Unit)? = null
+
+    // ViewModel dengan ViewModelFactory
+    private val productViewModel: ProductViewModel by viewModels {
+        ViewModelFactory(requireContext())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,12 +38,17 @@ class AddProductDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupUI()
+        observeViewModel()
+    }
+
+    private fun setupUI() {
         binding.btnClose.setOnClickListener {
             dismiss()
         }
 
         val categories = arrayOf("Makanan", "Minuman")
-        val adapter = ArrayAdapter(requireContext(), R.layout.simple_dropdown_item_1line, categories)
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, categories)
         binding.autoCompleteCategory.setAdapter(adapter)
 
         binding.btnCancelNewCategory.setOnClickListener {
@@ -52,6 +62,37 @@ class AddProductDialogFragment : DialogFragment() {
         }
         binding.btnCancel.setOnClickListener {
             dismiss()
+        }
+    }
+
+    /**
+     * Observe ViewModel untuk hasil add product
+     */
+    private fun observeViewModel() {
+        productViewModel.addProductResult.observe(this) { uiState ->
+            when (uiState) {
+                is UiState.Loading -> {
+                    // Disable button saat loading
+                    binding.btnAddProduct.isEnabled = false
+                    binding.btnAddProduct.text = "Adding..."
+                }
+                is UiState.Success -> {
+                    binding.btnAddProduct.isEnabled = true
+                    binding.btnAddProduct.text = "Add Product"
+                    Toast.makeText(requireContext(), "Product added successfully!", Toast.LENGTH_SHORT).show()
+                    onProductAdded?.invoke(CreateMenu("", "", "")) // Dummy data, actual data handled by ViewModel
+                    dismiss()
+                }
+                is UiState.Error -> {
+                    binding.btnAddProduct.isEnabled = true
+                    binding.btnAddProduct.text = "Add Product"
+                    Toast.makeText(requireContext(), uiState.message, Toast.LENGTH_SHORT).show()
+                }
+                is UiState.Idle -> {
+                    binding.btnAddProduct.isEnabled = true
+                    binding.btnAddProduct.text = "Add Product"
+                }
+            }
         }
     }
 
@@ -76,24 +117,8 @@ class AddProductDialogFragment : DialogFragment() {
             harga = harga,
         )
 
-        lifecycleScope.launch {
-            try {
-                val apiService = ApiClient.create(requireContext())
-                val response = apiService.addMenu(newProduct)
-                println(newProduct)
-
-                if (response.isSuccessful) {
-                    onProductAdded?.invoke(newProduct)
-                    Toast.makeText(requireContext(), "${newProduct.nama} added!", Toast.LENGTH_SHORT).show()
-                    dismiss()
-                } else {
-                    Toast.makeText(requireContext(), "Failed to add product", Toast.LENGTH_SHORT).show()
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
-        }
+        // Gunakan ViewModel untuk add product
+        productViewModel.addMenu(newProduct)
     }
 
     override fun onDestroyView() {
