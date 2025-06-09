@@ -1,5 +1,6 @@
 package com.example.kantinsekre.presentation.report
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,23 +8,33 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.viewModels
 import com.example.kantinsekre.R
-import com.example.kantinsekre.network.ApiService
-import com.example.kantinsekre.network.ApiClient
+import com.example.kantinsekre.models.DailyReportResponse
+import com.example.kantinsekre.models.MonthlyReportResponse
+import com.example.kantinsekre.presentation.state.UiState
+import com.example.kantinsekre.presentation.viewmodel.ReportViewModel
+import com.example.kantinsekre.presentation.viewmodel.ViewModelFactory
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 class ReportFragment : Fragment() {
 
-    private lateinit var apiService: ApiService
     private lateinit var todaySalesTV: TextView
     private lateinit var weekSalesTV: TextView
     private lateinit var monthSalesTV: TextView
     private lateinit var totalItemsTV: TextView
+    private lateinit var monthlyItemsTV: TextView
+    private lateinit var monthlyTransactionsTV: TextView
     private lateinit var dateTV: TextView
+
+    // ViewModel dengan ViewModelFactory
+    private val reportViewModel: ReportViewModel by viewModels {
+        ViewModelFactory(requireContext())
+    }
 
     companion object {
         private const val TAG = "ReportFragment"
@@ -39,18 +50,63 @@ class ReportFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
+
         initializeViews(view)
         setupDate()
-        loadReportData()
+        observeViewModel()
+
+        // Load data menggunakan ViewModel
+        reportViewModel.fetchDailyReport()
+        reportViewModel.fetchMonthlyReport()
     }
 
+    /**
+     * Observe ViewModel untuk perubahan data
+     */
+    private fun observeViewModel() {
+        reportViewModel.dailyReport.observe(viewLifecycleOwner) { uiState ->
+            when (uiState) {
+                is UiState.Loading -> {
+                    // Show loading state if needed
+                }
+                is UiState.Success -> {
+                    processDailyReportData(uiState.data)
+                }
+                is UiState.Error -> {
+                    showError("Daily Report: ${uiState.message}")
+                }
+                is UiState.Idle -> {
+                    // State awal, tidak perlu action
+                }
+            }
+        }
+
+        reportViewModel.monthlyReport.observe(viewLifecycleOwner) { uiState ->
+            when (uiState) {
+                is UiState.Loading -> {
+                    // Show loading state if needed
+                }
+                is UiState.Success -> {
+                    processMonthlyReportData(uiState.data)
+                }
+                is UiState.Error -> {
+                    showError("Monthly Report: ${uiState.message}")
+                }
+                is UiState.Idle -> {
+                    // State awal, tidak perlu action
+                }
+            }
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
     private fun initializeViews(view: View) {
-        apiService = ApiClient.create(requireContext())
         todaySalesTV = view.findViewById(R.id.today_sales_value)
         weekSalesTV = view.findViewById(R.id.week_sales_value)
         monthSalesTV = view.findViewById(R.id.month_sales_value)
         totalItemsTV = view.findViewById(R.id.total_items_value)
+        monthlyItemsTV = view.findViewById(R.id.monthly_items_value)
+        monthlyTransactionsTV = view.findViewById(R.id.monthly_transactions_value)
         dateTV = view.findViewById(R.id.current_date)
 
         // Set default values
@@ -58,6 +114,8 @@ class ReportFragment : Fragment() {
         weekSalesTV.text = "Rp 0"
         monthSalesTV.text = "Rp 0"
         totalItemsTV.text = "0"
+        monthlyItemsTV.text = "0"
+        monthlyTransactionsTV.text = "0"
     }
 
     private fun setupDate() {
@@ -67,117 +125,113 @@ class ReportFragment : Fragment() {
         dateTV.text = today
     }
 
-    private fun loadReportData() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            try {
-                Log.d(TAG, "Memulai pengambilan data laporan")
-                val response = apiService.getLaporanHarian()
-                
-                if (response.isSuccessful) {
-                    Log.d(TAG, "Response berhasil: ${response.code()}")
-                    val responseBody = response.body()
-                    
-                    if (responseBody?.success == true) {
-                        val laporanHarian = responseBody.data
-                        Log.d(TAG, "Jumlah data laporan: ${laporanHarian.size}")
-                        
-                        if (laporanHarian.isEmpty()) {
-                            Log.d(TAG, "Data laporan kosong")
-                            showError("Belum ada data laporan")
-                            return@launch
-                        }
-                        
-                        // Format tanggal untuk perbandingan
-                        val locale = Locale("id", "ID")
-                        val dateFormat = SimpleDateFormat("EEEE, d MMMM yyyy", locale)
-                        val today = dateFormat.format(Date())
-                        Log.d(TAG, "Tanggal hari ini: $today")
-                        
-                        // Hitung total untuk hari ini
-                        val todayReport = laporanHarian.firstOrNull { it.tanggal == today }
-                        val todaySales = todayReport?.total_pendapatan?.toInt() ?: 0
-                        Log.d(TAG, "Total penjualan hari ini: $todaySales")
-                        
-                        // Hitung total untuk minggu ini
-                        val calendar = Calendar.getInstance()
-                        val weekStart = calendar.apply {
-                            set(Calendar.DAY_OF_WEEK, calendar.firstDayOfWeek)
-                            set(Calendar.HOUR_OF_DAY, 0)
-                            set(Calendar.MINUTE, 0)
-                            set(Calendar.SECOND, 0)
-                        }.time
-                        Log.d(TAG, "Awal minggu: ${dateFormat.format(weekStart)}")
-                        
-                        val weekReports = laporanHarian.filter { 
-                            try {
-                                val reportDate = dateFormat.parse(it.tanggal)
-                                val isValid = reportDate != null && !reportDate.before(weekStart)
-                                Log.d(TAG, "Tanggal: ${it.tanggal}, Valid: $isValid")
-                                isValid
-                            } catch (e: Exception) {
-                                Log.e(TAG, "Error parsing tanggal: ${it.tanggal}", e)
-                                false
-                            }
-                        }
-                        val weekSales = weekReports.sumOf { it.total_pendapatan?.toInt() ?: 0 }
-                        Log.d(TAG, "Total penjualan minggu ini: $weekSales")
-                        
-                        // Hitung total untuk bulan ini
-                        val monthStart = calendar.apply {
-                            set(Calendar.DAY_OF_MONTH, 1)
-                            set(Calendar.HOUR_OF_DAY, 0)
-                            set(Calendar.MINUTE, 0)
-                            set(Calendar.SECOND, 0)
-                        }.time
-                        Log.d(TAG, "Awal bulan: ${dateFormat.format(monthStart)}")
-                        
-                        val monthReports = laporanHarian.filter { 
-                            try {
-                                val reportDate = dateFormat.parse(it.tanggal)
-                                val isValid = reportDate != null && !reportDate.before(monthStart)
-                                Log.d(TAG, "Tanggal: ${it.tanggal}, Valid: $isValid")
-                                isValid
-                            } catch (e: Exception) {
-                                Log.e(TAG, "Error parsing tanggal: ${it.tanggal}", e)
-                                false
-                            }
-                        }
-                        val monthSales = monthReports.sumOf { it.total_pendapatan?.toInt() ?: 0 }
-                        Log.d(TAG, "Total penjualan bulan ini: $monthSales")
-                        
-                        // Hitung total transaksi
-                        val totalTransactions = monthReports.sumOf { it.total_transaksi ?: 0 }
-                        Log.d(TAG, "Total transaksi: $totalTransactions")
+    /**
+     * Process daily report data dari ViewModel
+     */
+    private fun processDailyReportData(responseBody: DailyReportResponse) {
+        try {
+            if (responseBody.success) {
+                val laporanHarian = responseBody.data
 
-                        // Update UI
-                        updateUI(todaySales, weekSales, monthSales, totalTransactions)
-                    } else {
-                        val errorMessage = responseBody?.message ?: "Unknown error"
-                        Log.e(TAG, "Response tidak sukses: $errorMessage")
-                        showError("Gagal memuat data laporan: $errorMessage")
-                    }
-                } else {
-                    val errorBody = response.errorBody()?.string()
-                    Log.e(TAG, "Response error: ${response.code()} - ${response.message()}")
-                    Log.e(TAG, "Error body: $errorBody")
-                    showError("Gagal memuat data laporan: ${response.message()}")
+                if (laporanHarian.isEmpty()) {
+                    showError("Belum ada data laporan harian")
+                    return
                 }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error saat memuat data", e)
-                showError("Terjadi kesalahan: ${e.message}")
+
+                // Format tanggal untuk perbandingan (yyyy-MM-dd)
+                val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                val today = dateFormat.format(Date())
+
+                // Hitung total untuk hari ini
+                val todayReport = laporanHarian.firstOrNull { it.tanggal == today }
+                val todaySales = todayReport?.total_pendapatan?.toIntOrNull() ?: 0
+                val todayTransactions = todayReport?.total_transaksi ?: 0
+
+                // Hitung total untuk minggu ini
+                val calendar = Calendar.getInstance()
+                val weekStart = calendar.apply {
+                    set(Calendar.DAY_OF_WEEK, calendar.firstDayOfWeek)
+                    set(Calendar.HOUR_OF_DAY, 0)
+                    set(Calendar.MINUTE, 0)
+                    set(Calendar.SECOND, 0)
+                }.time
+
+                val weekReports = laporanHarian.filter {
+                    try {
+                        val reportDate = dateFormat.parse(it.tanggal)
+                        reportDate != null && !reportDate.before(weekStart)
+                    } catch (_: Exception) {
+                        false
+                    }
+                }
+                val weekSales = weekReports.sumOf { it.total_pendapatan.toIntOrNull() ?: 0 }
+
+                // Update UI dengan data harian
+                updateDailyUI(todaySales, weekSales, todayTransactions)
+
+            } else {
+                showError("Gagal memuat data laporan harian: ${responseBody.message}")
             }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error saat memproses data harian", e)
+            showError("Terjadi kesalahan: ${e.message}")
         }
     }
 
-    private fun updateUI(todaySales: Int, weekSales: Int, monthSales: Int, totalTransactions: Int) {
+    /**
+     * Process monthly report data dari ViewModel
+     */
+    private fun processMonthlyReportData(responseBody: MonthlyReportResponse) {
+        try {
+            if (responseBody.success == true) {
+                val laporanBulanan = responseBody.data?.filterNotNull() ?: emptyList()
+
+                if (laporanBulanan.isEmpty()) {
+                    showError("Belum ada data laporan bulanan")
+                    return
+                }
+
+                // Ambil data bulan ini
+                val currentMonth = SimpleDateFormat("yyyy-MM", Locale.getDefault()).format(Date())
+                val thisMonthReport = laporanBulanan.firstOrNull { report -> report.bulan == currentMonth }
+
+                val monthSales = thisMonthReport?.totalPendapatan?.toIntOrNull() ?: 0
+                val monthlyTransactions = thisMonthReport?.totalTransaksi ?: 0
+
+                // Ambil data items dari bulan ini saja
+                val monthlyItems = thisMonthReport?.totalTransaksi ?: 0
+
+                // Update UI dengan data bulanan
+                updateMonthlyUI(monthSales, monthlyItems, monthlyTransactions)
+
+            } else {
+                showError("Gagal memuat data laporan bulanan: ${responseBody.message}")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error saat memproses data bulanan", e)
+            showError("Terjadi kesalahan: ${e.message}")
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun updateDailyUI(todaySales: Int, weekSales: Int, todayTransactions: Int) {
         try {
             todaySalesTV.text = "Rp ${formatCurrency(todaySales)}"
             weekSalesTV.text = "Rp ${formatCurrency(weekSales)}"
-            monthSalesTV.text = "Rp ${formatCurrency(monthSales)}"
-            totalItemsTV.text = formatNumber(totalTransactions)
-            Log.d(TAG, "UI berhasil diupdate")
+            totalItemsTV.text = formatNumber(todayTransactions)
         } catch (e: Exception) {
-            Log.e(TAG, "Error saat update UI", e)
+            Log.e(TAG, "Error updating daily UI", e)
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun updateMonthlyUI(monthSales: Int, monthlyItems: Int, monthlyTransactions: Int) {
+        try {
+            monthSalesTV.text = "Rp ${formatCurrency(monthSales)}"
+            monthlyItemsTV.text = formatNumber(monthlyItems)
+            monthlyTransactionsTV.text = formatNumber(monthlyTransactions)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error updating monthly UI", e)
         }
     }
 
@@ -187,10 +241,12 @@ class ReportFragment : Fragment() {
         }
     }
 
+    @SuppressLint("DefaultLocale")
     private fun formatCurrency(value: Int): String {
         return String.format("%,d", value).replace(',', '.')
     }
 
+    @SuppressLint("DefaultLocale")
     private fun formatNumber(value: Int): String {
         return String.format("%,d", value).replace(',', '.')
     }

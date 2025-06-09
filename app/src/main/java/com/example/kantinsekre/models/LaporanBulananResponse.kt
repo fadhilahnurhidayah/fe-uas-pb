@@ -22,7 +22,7 @@ data class MonthlyReport(
 	val totalTransaksi: Int? = null,
 
 	@field:SerializedName("total_pendapatan")
-	val totalPendapatan: Double? = null,
+	val totalPendapatan: String? = null,
 
 	@field:SerializedName("transaksi_selesai")
 	val transaksiSelesai: String? = null,

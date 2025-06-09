@@ -2,8 +2,8 @@ package com.example.kantinsekre.models
 
 import com.google.gson.annotations.SerializedName
 
-data class AuthResponse(
 
+data class AuthResponse(
 	@field:SerializedName("success")
 	val success: Boolean? = null,
 
@@ -11,17 +11,10 @@ data class AuthResponse(
 	val message: String? = null,
 
 	@field:SerializedName("data")
-	val data: Token
+	val data: Token? = null
 )
-data class User(
-	@field:SerializedName("nama")
-	val nama: String,
 
-	@field:SerializedName("password")
-	val password: String,
-)
 data class Token(
-
 	@field:SerializedName("token")
 	val token: String? = null
 )

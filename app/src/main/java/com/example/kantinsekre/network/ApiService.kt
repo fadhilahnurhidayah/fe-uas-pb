@@ -1,16 +1,16 @@
 package com.example.kantinsekre.network
 
-import android.view.Menu
 import com.example.kantinsekre.models.AuthResponse
 import com.example.kantinsekre.models.CreateMenu
+import com.example.kantinsekre.models.CurrentUser
+import com.example.kantinsekre.models.DailyReportResponse
+import com.example.kantinsekre.models.MonthlyReportResponse
 import com.example.kantinsekre.models.ProductResponse
-import com.example.kantinsekre.models.Transaksi
+import com.example.kantinsekre.models.StatusUpdateRequest
+import com.example.kantinsekre.models.TransaksiRequest
 import com.example.kantinsekre.models.TransaksiResponse
 import com.example.kantinsekre.models.User
 import com.example.kantinsekre.models.UserResponse
-import com.example.kantinsekre.models.MonthlyReportResponse
-import com.example.kantinsekre.models.DailyReportResponse
-import com.example.kantinsekre.models.TransaksiRequest
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -27,13 +27,19 @@ interface ApiService {
     @GET("/user")
     suspend fun getAllUsers(): Response<UserResponse>
 
-    @POST("/register")
+    @GET("/user/{id}")
+    suspend fun getUserById(@Path("id") id: String): Response<UserResponse>
+
+    @GET("/user/current")
+    suspend fun getCurrentUser(): Response<CurrentUser>
+
+    @POST("user/register")
     suspend fun addUser(@Body user: User): Response<Unit>
 
-    @PUT("user/{id}")
+    @PUT("user/update-user/{id}")
     suspend fun updateUser(@Path("id") id: String, @Body user: User): Response<Unit>
 
-    @DELETE("user/{id}")
+    @DELETE("user/delete-user/{id}")
     suspend fun deleteUser(@Path("id") id: String): Response<Unit>
 
     @GET("/menu")
@@ -41,9 +47,6 @@ interface ApiService {
 
     @POST("menu/")
     suspend fun addMenu(@Body request: CreateMenu): Response<Unit>
-
-    @PUT("menu/{id}")
-    suspend fun updateMenu(@Path("id") id: String, @Body menu: Menu): Response<Unit>
 
     @DELETE("menu/{id}")
     suspend fun deleteMenu(@Path("id") id: String): Response<Unit>
@@ -55,7 +58,7 @@ interface ApiService {
     suspend fun addTransaksi(@Body request: TransaksiRequest): Response<Unit>
 
     @PUT("transaksi/{id}")
-    suspend fun updateTransaksi(@Path("id") id: String, @Body request: TransaksiRequest): Response<Unit>
+    suspend fun updateTransaksi(@Path("id") id: String, @Body request: StatusUpdateRequest): Response<Unit>
 
     @DELETE("transaksi/{id}")
     suspend fun deleteTransaksi(@Path("id") id: String): Response<Unit>

@@ -13,7 +13,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class ProductAdapter(
     private val products: MutableList<Menu>,
-    private val onProductClick: (Menu) -> Unit
+    private val onProductClick: (Menu) -> Unit,
+    private val onDeleteClick: (Menu) -> Unit
 ) : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
 
     class ProductViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -37,25 +38,19 @@ class ProductAdapter(
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
         val product = products[position]
 
-        // Set product information
         holder.productName.text = product.nama
         holder.productCategory.text = product.jenis
 
-        // Format price with proper currency symbol and formatting
         holder.productPrice.text = "Rp ${product.harga}"
 
-        // Set default image resource
         holder.productImage.setImageResource(R.drawable.placeholder_food)
 
-        // Set up action buttons
         setupActionButtons(holder, product)
 
-        // Set click listener on the entire view
         holder.itemView.setOnClickListener {
             onProductClick(product)
         }
 
-        // Long press to show edit/delete options
         holder.itemView.setOnLongClickListener {
             toggleActionOverlay(holder, true)
             true
@@ -63,23 +58,16 @@ class ProductAdapter(
     }
 
     private fun setupActionButtons(holder: ProductViewHolder, product: Menu) {
-        // Edit button click listener
         holder.fabEdit.setOnClickListener {
-            // Handle edit action
             toggleActionOverlay(holder, false)
-            // You could trigger an edit dialog or navigate to edit screen
-            // For now, just use the same product click handler
             onProductClick(product)
         }
 
-        // Delete button click listener
         holder.fabDelete.setOnClickListener {
-            // Handle delete action
             toggleActionOverlay(holder, false)
-            // Implement delete functionality here
+            onDeleteClick(product)
         }
 
-        // Clicking anywhere on the overlay dismisses it
         holder.viewOverlay.setOnClickListener {
             toggleActionOverlay(holder, false)
         }

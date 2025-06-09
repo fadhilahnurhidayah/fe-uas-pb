@@ -1,5 +1,6 @@
 package com.example.kantinsekre.presentation.transaction
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -8,24 +9,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kantinsekre.R
 import com.example.kantinsekre.adapters.TransactionAdapter
 import com.example.kantinsekre.models.Transaksi
-import com.example.kantinsekre.models.TransaksiRequest
-import com.example.kantinsekre.models.ItemRequest
-import com.example.kantinsekre.network.ApiClient
-import com.example.kantinsekre.presentation.SharedViewModel
+import com.example.kantinsekre.presentation.state.UiState
+import com.example.kantinsekre.presentation.viewmodel.TransactionViewModel
+import com.example.kantinsekre.presentation.viewmodel.ViewModelFactory
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
-import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class TransactionFragment : Fragment() {
 
@@ -37,7 +36,11 @@ class TransactionFragment : Fragment() {
     private lateinit var transactionAdapter: TransactionAdapter
     private val transactions = mutableListOf<Transaksi>()
     private val filteredTransactions = mutableListOf<Transaksi>()
-    private val sharedViewModel: SharedViewModel by activityViewModels()
+
+    // ViewModel dengan ViewModelFactory
+    private val transactionViewModel: TransactionViewModel by viewModels {
+        ViewModelFactory(requireContext())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,7 +57,55 @@ class TransactionFragment : Fragment() {
         setupRecyclerView()
         setupSearch()
         setupFab()
-        loadTransactions()
+        observeViewModel()
+
+        // Load data menggunakan ViewModel
+        transactionViewModel.fetchAllTransactions()
+    }
+
+    /**
+     * Observe ViewModel untuk perubahan data
+     */
+    private fun observeViewModel() {
+        // Observe transactions list
+        transactionViewModel.transactions.observe(viewLifecycleOwner) { uiState ->
+            when (uiState) {
+                is UiState.Loading -> {
+                    // Tampilkan loading indicator jika diperlukan
+                }
+                is UiState.Success -> {
+                    transactions.clear()
+                    transactions.addAll(sortTransactionsByDate(uiState.data))
+                    filterTransactions(searchEditText.text.toString())
+                }
+                is UiState.Error -> {
+                    Snackbar.make(requireView(), uiState.message, Snackbar.LENGTH_SHORT).show()
+                }
+                is UiState.Idle -> {
+                    // State awal, tidak perlu action
+                }
+            }
+        }
+
+
+
+        // Observe update transaction result
+        transactionViewModel.updateTransactionResult.observe(viewLifecycleOwner) { uiState ->
+            when (uiState) {
+                is UiState.Loading -> {
+                    // Tampilkan loading indicator jika diperlukan
+                }
+                is UiState.Success -> {
+                    Snackbar.make(requireView(), "Status transaksi berhasil diupdate", Snackbar.LENGTH_SHORT).show()
+                }
+                is UiState.Error -> {
+                    Snackbar.make(requireView(), "Gagal mengupdate status: ${uiState.message}", Snackbar.LENGTH_SHORT).show()
+                }
+                is UiState.Idle -> {
+                    // State awal, tidak perlu action
+                }
+            }
+        }
     }
 
     private fun initializeViews(view: View) {
@@ -67,16 +118,7 @@ class TransactionFragment : Fragment() {
 
     private fun setupToolbar() {
         toolbar.title = "Transaksi"
-        toolbar.inflateMenu(R.menu.transaction_menu)
-        toolbar.setOnMenuItemClickListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.action_add_struk -> {
-                    findNavController().navigate(R.id.action_transactionFragment_to_newTransactionFragment)
-                    true
-                }
-                else -> false
-            }
-        }
+        // Menu removed - using FAB for add transaction functionality
     }
 
     private fun setupRecyclerView() {
@@ -105,6 +147,9 @@ class TransactionFragment : Fragment() {
         }
     }
 
+
+
+    @SuppressLint("NotifyDataSetChanged")
     private fun filterTransactions(query: String) {
         filteredTransactions.clear()
         if (query.isEmpty()) {
@@ -131,75 +176,36 @@ class TransactionFragment : Fragment() {
         }
     }
 
-    private fun loadTransactions() {
-        lifecycleScope.launch {
-            try {
-                val apiService = ApiClient.create(requireContext())
-                val response = apiService.getAllTransaksi()
-                if (response.isSuccessful && response.body()?.success == true) {
-                    transactions.clear()
-                    response.body()?.data?.filterNotNull()?.let { transactionList ->
-                        transactions.addAll(transactionList)
-                    }
-                    filterTransactions(searchEditText.text.toString())
-                } else {
-                    Snackbar.make(requireView(), "Gagal memuat transaksi", Snackbar.LENGTH_SHORT).show()
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Snackbar.make(requireView(), "Error: ${e.message}", Snackbar.LENGTH_SHORT).show()
-            }
-        }
-    }
-
     private fun cancelTransaction(transaction: Transaksi) {
-        lifecycleScope.launch {
-            try {
-                val apiService = ApiClient.create(requireContext())
-                val currentUser = sharedViewModel.getCurrentUser()
-                val request = TransaksiRequest(
-                    namaPembeli = transaction.namaPembeli ?: "",
-                    namaUser = currentUser?.nama ?: "admin",
-                    tanggal = transaction.tanggal,
-                    items = emptyList() // TODO: Get actual items from transaction
-                )
-                val response = apiService.updateTransaksi(
-                    id = transaction.id.toString(),
-                    request = request
-                )
-                if (response.isSuccessful) {
-                    loadTransactions()
-                    Snackbar.make(requireView(), "Transaksi dibatalkan", Snackbar.LENGTH_SHORT).show()
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Snackbar.make(requireView(), "Gagal membatalkan transaksi: ${e.message}", Snackbar.LENGTH_SHORT).show()
-            }
-        }
+        // Gunakan updateTransaksi untuk mengubah status ke dibatalkan
+        transactionViewModel.updateTransaksi(transaction.id.toString(), "dibatalkan")
     }
 
     private fun completeTransaction(transaction: Transaksi) {
-        lifecycleScope.launch {
+        // Gunakan updateTransaksi untuk mengubah status ke selesai
+        transactionViewModel.updateTransaksi(transaction.id.toString(), "selesai")
+    }
+
+    /**
+     * Sort transaksi berdasarkan tanggal (terbaru ke terlama)
+     */
+    private fun sortTransactionsByDate(transactionList: List<Transaksi>): List<Transaksi> {
+        return transactionList.sortedWith { t1, t2 ->
             try {
-                val apiService = ApiClient.create(requireContext())
-                val currentUser = sharedViewModel.getCurrentUser()
-                val request = TransaksiRequest(
-                    namaPembeli = transaction.namaPembeli ?: "",
-                    namaUser = currentUser?.nama ?: "admin",
-                    tanggal = transaction.tanggal,
-                    items = emptyList() // TODO: Get actual items from transaction
-                )
-                val response = apiService.updateTransaksi(
-                    id = transaction.id.toString(),
-                    request = request
-                )
-                if (response.isSuccessful) {
-                    loadTransactions()
-                    Snackbar.make(requireView(), "Transaksi selesai", Snackbar.LENGTH_SHORT).show()
+                val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                val date1 = dateFormat.parse(t1.tanggal)
+                val date2 = dateFormat.parse(t2.tanggal)
+
+                // Sort descending (terbaru ke terlama)
+                when {
+                    date1 == null && date2 == null -> 0
+                    date1 == null -> 1
+                    date2 == null -> -1
+                    else -> date2.compareTo(date1)
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Snackbar.make(requireView(), "Gagal menyelesaikan transaksi: ${e.message}", Snackbar.LENGTH_SHORT).show()
+            } catch (_: Exception) {
+                // Jika parsing gagal, sort berdasarkan ID (terbaru ke terlama)
+                t2.id.compareTo(t1.id)
             }
         }
     }
