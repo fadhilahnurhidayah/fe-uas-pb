@@ -105,6 +105,8 @@ class LoginActivity : AppCompatActivity() {
                 is UiState.Idle -> {
                     showLoading(false)
                 }
+
+                else -> {}
             }
         }
 

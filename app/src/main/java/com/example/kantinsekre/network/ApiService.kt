@@ -27,9 +27,6 @@ interface ApiService {
     @GET("/user")
     suspend fun getAllUsers(): Response<UserResponse>
 
-    @GET("/user/{id}")
-    suspend fun getUserById(@Path("id") id: String): Response<UserResponse>
-
     @GET("/user/current")
     suspend fun getCurrentUser(): Response<CurrentUser>
 
